@@ -1,0 +1,30 @@
+{
+  "provider": "Flaticon",
+  "family": "Uicons Regular Rounded",
+  "version": "3.3.1",
+  "source": "https://www.flaticon.com/uicons",
+  "package": "@flaticon/flaticon-uicons",
+  "license": "FLATICON-LICENSE.txt",
+  "modification": "Font glyphs converted into inline SVG paths, scaled to 24x24",
+  "icons": {
+    "games": "gamepad",
+    "library": "books",
+    "model": "microchip",
+    "diagnostics": "clipboard-list",
+    "settings": "settings",
+    "plus": "plus",
+    "play": "play",
+    "arrow": "arrow-right",
+    "folder": "folder",
+    "search": "search",
+    "check": "check",
+    "download": "download",
+    "close": "cross",
+    "info": "info",
+    "stop": "stop",
+    "refresh": "refresh",
+    "code": "code-simple",
+    "edit": "edit",
+    "help": "interrogation"
+  }
+}

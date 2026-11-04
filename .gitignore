@@ -1,0 +1,49 @@
+# Portable runtime, user projects, games and generated distributions
+/runtime/
+/data/
+/projects/
+/games/
+/work/
+/reports/
+/downloads/
+/dist/
+/build/
+*.gguf
+*.rpa
+*.rpyc
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+*.db
+*.db-*
+*.zip
+*.log
+*.jsonl
+
+# Native build outputs; keep C# sources, icon and manifest
+**/bin/
+**/obj/
+/app/desktop/picker-publish/
+/app/release_manifest.json
+
+# Generated diagnostic evidence is not source code
+/docs/checks*/
+/docs/archive/
+
+# Python and local environment
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.env
+.env.*
+!.env.example
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

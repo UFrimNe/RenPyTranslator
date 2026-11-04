@@ -1,0 +1,45 @@
+{
+  "source_language": "auto",
+  "target_language": "Russian",
+  "target_language_code": "ru",
+  "renpy_language": "russian",
+  "provider": {
+    "type": "google_free",
+    "model": "google-web-rpc",
+    "endpoint": "https://translate.google.com/_/TranslateWebserverUi/data/batchexecute",
+    "source_language_code": "auto",
+    "target_language_code": "ru",
+    "timeout_seconds": 30,
+    "max_retries": 2,
+    "retry_delay_seconds": 2,
+    "request_delay_seconds": 0.35
+  },
+  "batch": {
+    "max_segments": 64,
+    "max_chars": 2200
+  },
+  "context": {
+    "previous": 0,
+    "next": 0
+  },
+  "translation": {
+    "use_existing_translation_memory": false,
+    "include_statuses": [
+      "pending",
+      "error"
+    ],
+    "channels": [
+      "semantic",
+      "localization"
+    ],
+    "stop_on_batch_error": true,
+    "progress_every_batches": 1
+  },
+  "validation": {
+    "reject_empty": true,
+    "max_length_ratio": 8.0,
+    "min_source_chars_for_ratio": 20
+  },
+  "glossary": {},
+  "notes": ""
+}

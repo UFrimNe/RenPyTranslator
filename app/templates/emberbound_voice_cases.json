@@ -1,0 +1,967 @@
+[
+  {
+    "id": "01-emberbound-part1_after_player_name_6b9d8329",
+    "feature": "emotion-and-intent",
+    "source": "嘿！别发呆了，[player_name]！",
+    "kind": "dialogue",
+    "speaker": "a",
+    "origin": "static",
+    "profile": {
+      "display_name": "晟阳",
+      "english_name": "Shengyang",
+      "russian_name": "Шэнъян",
+      "gender": "male",
+      "profanity": "source",
+      "entity_type": "person"
+    },
+    "profiles": {
+      "a": {
+        "display_name": "晟阳",
+        "english_name": "Shengyang",
+        "russian_name": "Шэнъян",
+        "gender": "male",
+        "profanity": "source",
+        "entity_type": "person"
+      },
+      "p": {
+        "display_name": "[player_name]",
+        "gender": "male",
+        "profanity": "source",
+        "entity_type": "player",
+        "interpolation_variables": [
+          "player_name"
+        ]
+      }
+    },
+    "before": [
+      {
+        "id": "renpy:part1_after_player_name_3fc3b4ef",
+        "kind": "dialogue",
+        "speaker": "p",
+        "text": "喂......你是饕餮吗？又没人跟你抢。",
+        "reference_en": "Hey... are you some kind of glutton? No one will steal the food from you."
+      },
+      {
+        "id": "renpy:part1_after_player_name_53262de0",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "你懂什么，烧烤就得趁热吃！",
+        "reference_en": "What do you know? Barbecue should be eaten while it's hot!"
+      },
+      {
+        "id": "renpy:part1_after_player_name_b1348d31",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "再说了，难得回来一趟，哥不得带你吃点好的？",
+        "reference_en": "Besides, you don't come back often. I should treat you to something good, right?"
+      },
+      {
+        "id": "renpy:part1_after_player_name_7035a1a3",
+        "kind": "narration",
+        "speaker": "",
+        "text": "虽然嘴上说是带我来吃点好的，但实际上是这个家伙自己嘴馋了吧......",
+        "reference_en": "Although he said he was bringing me here to eat something nice, it was probably just that he was craving something himself."
+      }
+    ],
+    "after": [
+      {
+        "id": "renpy:part1_after_player_name_bf4ecfe1",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "明天下午的「活动」你还记得吧？",
+        "reference_en": "You remember the activity tomorrow afternoon, right?"
+      },
+      {
+        "id": "renpy:part1_after_player_name_f9f4ca37",
+        "kind": "dialogue",
+        "speaker": "p",
+        "text": "都说知道了啊！记性再差提醒了十遍也该记得了吧。",
+        "reference_en": "I said I know it! Even if my memory were terrible, I'd remember after being reminded ten times."
+      },
+      {
+        "id": "renpy:part1_after_player_name_a168361d",
+        "kind": "dialogue",
+        "speaker": "p",
+        "text": "你才是，别到时候又忘了。",
+        "reference_en": "You're the one who'd better not forget again."
+      }
+    ],
+    "addressee": {
+      "speaker_id": "p",
+      "gender": "male"
+    },
+    "reference_en": "Hey! Stop spacing out, [player_name]!",
+    "reported_translation": "Эй! Хватит простаивать, ⟪RPT0000⟫!",
+    "criteria": "Сохранить эмоцию и смысл исходника; разговорный русский, корректные роли и согласование."
+  },
+  {
+    "id": "02-emberbound-part1_2_0c82135a",
+    "feature": "emotion-and-intent",
+    "source": "——所以呀，儿子，别担心。找工作嘛，不急，反正还有老妈老爸兜底的嘛，再好好考虑一下。早点睡。",
+    "kind": "dialogue",
+    "speaker": "mom",
+    "origin": "static",
+    "profile": {
+      "display_name": "老妈",
+      "english_name": "Mom",
+      "russian_name": "Мама",
+      "gender": "female",
+      "profanity": "source",
+      "entity_type": "person"
+    },
+    "profiles": {
+      "a": {
+        "display_name": "晟阳",
+        "english_name": "Shengyang",
+        "russian_name": "Шэнъян",
+        "gender": "male",
+        "profanity": "source",
+        "entity_type": "person"
+      },
+      "mom": {
+        "display_name": "老妈",
+        "english_name": "Mom",
+        "russian_name": "Мама",
+        "gender": "female",
+        "profanity": "source",
+        "entity_type": "person"
+      },
+      "p": {
+        "display_name": "[player_name]",
+        "gender": "male",
+        "profanity": "source",
+        "entity_type": "player",
+        "interpolation_variables": [
+          "player_name"
+        ]
+      }
+    },
+    "before": [
+      {
+        "id": "renpy:part1_2_aeae6425",
+        "kind": "narration",
+        "speaker": "",
+        "text": "“‹player_name›，走！哥带你去买冰棍！”",
+        "reference_en": "\"‹player_name›, come on! Let's go to buy you a popsicle!\""
+      },
+      {
+        "id": "renpy:part1_2_beb6d52d",
+        "kind": "narration",
+        "speaker": "",
+        "text": "那都是......初中时的事了啊。",
+        "reference_en": "That was... back in middle school."
+      },
+      {
+        "id": "renpy:part1_2_cdcfc84e",
+        "kind": "narration",
+        "speaker": "",
+        "text": "只是，很久都没联系了。",
+        "reference_en": "We haven't spoken in a long time, though."
+      },
+      {
+        "id": "renpy:part1_2_9eed5ceb",
+        "kind": "narration",
+        "speaker": "",
+        "text": "他现在过得——",
+        "reference_en": "I wonder how is he doing now..."
+      }
+    ],
+    "after": [
+      {
+        "id": "renpy:part1_2_6aff7a20",
+        "kind": "dialogue",
+        "speaker": "p",
+        "text": "嗯，哦，好......晚安。",
+        "reference_en": "Hmm. Yeah. Okay... good night."
+      },
+      {
+        "id": "renpy:part1_2_f81abcc6",
+        "kind": "narration",
+        "speaker": "",
+        "text": "呃......怎么又发呆了，莫名其妙就挂断电话了......",
+        "reference_en": "Uh... I spaced out again and somehow ended the call..."
+      },
+      {
+        "id": "renpy:part1_2_a623a3cf",
+        "kind": "narration",
+        "speaker": "",
+        "text": "不过......晟阳他现在，应该长大了吧。",
+        "reference_en": "However... Shengyang must've grown up by now."
+      }
+    ],
+    "addressee": {
+      "speaker_id": "p",
+      "gender": "male"
+    },
+    "reference_en": "So, son, don't worry. There's no rush to find a job. Your father and I have your back. Think it over, and get some sleep.",
+    "reported_translation": "— Вот и всё, сынок, не волнуйся. Не нужно спешить с поиском работы — у нас же есть мы с папой, кто тебя поддержит. Лучше ещё раз всё обдумай и ложись спать пораньше.",
+    "criteria": "Сохранить эмоцию и смысл исходника; разговорный русский, корректные роли и согласование."
+  },
+  {
+    "id": "03-emberbound-0001",
+    "feature": "emotion-and-intent",
+    "source": "啊？！！[player_name]！？？",
+    "kind": "dialogue",
+    "speaker": "a",
+    "origin": "interactive",
+    "profile": {
+      "display_name": "晟阳",
+      "english_name": "Shengyang",
+      "russian_name": "Шэнъян",
+      "gender": "male",
+      "profanity": "source",
+      "entity_type": "person"
+    },
+    "profiles": {
+      "a": {
+        "display_name": "晟阳",
+        "english_name": "Shengyang",
+        "russian_name": "Шэнъян",
+        "gender": "male",
+        "profanity": "source",
+        "entity_type": "person"
+      },
+      "p": {
+        "display_name": "[player_name]",
+        "gender": "male",
+        "profanity": "source",
+        "entity_type": "player",
+        "interpolation_variables": [
+          "player_name"
+        ]
+      }
+    },
+    "before": [
+      {
+        "id": "interactive:e83c33964b5025d122e7:0000",
+        "kind": "dialogue",
+        "speaker": "p",
+        "text": "嗨......晟阳！",
+        "reference_en": "Hey... Shengyang!"
+      }
+    ],
+    "after": [
+      {
+        "id": "interactive:e83c33964b5025d122e7:0002",
+        "kind": "dialogue",
+        "speaker": "p",
+        "text": "啊，是我，好久不见。",
+        "reference_en": "Yeah, it's me. Long time no see."
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0003",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "好家伙你终于上线了！",
+        "reference_en": "Well, look who's finally online!"
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0004",
+        "kind": "dialogue",
+        "speaker": "p",
+        "text": "哈哈，好久没联系了。",
+        "reference_en": "Haha, it's been a while."
+      }
+    ],
+    "addressee": {
+      "speaker_id": "p",
+      "gender": "male"
+    },
+    "reference_en": "Huh?! [player_name]?!",
+    "reported_translation": "Чего?! Это же я, ⟪RPT0000⟫?!",
+    "criteria": "Узнавание и удивление: обращение по имени, не утверждение это я."
+  },
+  {
+    "id": "04-emberbound-0017",
+    "feature": "emotion-and-intent",
+    "source": "滚滚滚，别这么肉麻。",
+    "kind": "dialogue",
+    "speaker": "p",
+    "origin": "interactive",
+    "profile": {
+      "display_name": "[player_name]",
+      "gender": "male",
+      "profanity": "source",
+      "entity_type": "player",
+      "interpolation_variables": [
+        "player_name"
+      ]
+    },
+    "profiles": {
+      "a": {
+        "display_name": "晟阳",
+        "english_name": "Shengyang",
+        "russian_name": "Шэнъян",
+        "gender": "male",
+        "profanity": "source",
+        "entity_type": "person"
+      },
+      "mom": {
+        "display_name": "老妈",
+        "english_name": "Mom",
+        "russian_name": "Мама",
+        "gender": "female",
+        "profanity": "source",
+        "entity_type": "person"
+      },
+      "p": {
+        "display_name": "[player_name]",
+        "gender": "male",
+        "profanity": "source",
+        "entity_type": "player",
+        "interpolation_variables": [
+          "player_name"
+        ]
+      }
+    },
+    "before": [
+      {
+        "id": "interactive:e83c33964b5025d122e7:0013",
+        "kind": "narration",
+        "speaker": "",
+        "text": "太久没见。",
+        "reference_en": "It was been too long that we didn't meet.."
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0014",
+        "kind": "narration",
+        "speaker": "",
+        "text": "也太久没这么聊天了。",
+        "reference_en": "And also been so long since we've had a chat like this."
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0015",
+        "kind": "narration",
+        "speaker": "",
+        "text": "思来想去还是发了个万能表情包过去。",
+        "reference_en": "After thinking it over, I sent a normal emoji."
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0016",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "怎么突然给我发消息呀！终于想我了！？",
+        "reference_en": "Why do you suddenly message me?! You finally think about me?!"
+      }
+    ],
+    "after": [
+      {
+        "id": "interactive:e83c33964b5025d122e7:0018",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "‹player_name›还是和小时候一样啊！",
+        "reference_en": "You're just like when we were kids, ‹player_name›!"
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0019",
+        "kind": "dialogue",
+        "speaker": "p",
+        "text": "来找你是我妈说社区签字需要本人到场，想问问你啦。",
+        "reference_en": "I message you because mom said I have to sign the community form in person. So I want to ask you about it."
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0020",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "你直接回来签字呗。",
+        "reference_en": "Then you just come back and sign it."
+      }
+    ],
+    "addressee": {
+      "speaker_id": "a",
+      "gender": "male"
+    },
+    "reference_en": "Come on... Don't be so mushy..",
+    "reported_translation": "Убирайся, хватит быть таким сентиментальным.",
+    "criteria": "Дружеское отмахивание от нежностей; без книжной сентиментальности, приказа уйти или добавленной агрессии."
+  },
+  {
+    "id": "05-emberbound-0019",
+    "feature": "emotion-and-intent",
+    "source": "来找你是我妈说社区签字需要本人到场，想问问你啦。",
+    "kind": "dialogue",
+    "speaker": "p",
+    "origin": "interactive",
+    "profile": {
+      "display_name": "[player_name]",
+      "gender": "male",
+      "profanity": "source",
+      "entity_type": "player",
+      "interpolation_variables": [
+        "player_name"
+      ]
+    },
+    "profiles": {
+      "a": {
+        "display_name": "晟阳",
+        "english_name": "Shengyang",
+        "russian_name": "Шэнъян",
+        "gender": "male",
+        "profanity": "source",
+        "entity_type": "person"
+      },
+      "mom": {
+        "display_name": "老妈",
+        "english_name": "Mom",
+        "russian_name": "Мама",
+        "gender": "female",
+        "profanity": "source",
+        "entity_type": "person"
+      },
+      "p": {
+        "display_name": "[player_name]",
+        "gender": "male",
+        "profanity": "source",
+        "entity_type": "player",
+        "interpolation_variables": [
+          "player_name"
+        ]
+      }
+    },
+    "before": [
+      {
+        "id": "interactive:e83c33964b5025d122e7:0015",
+        "kind": "narration",
+        "speaker": "",
+        "text": "思来想去还是发了个万能表情包过去。",
+        "reference_en": "After thinking it over, I sent a normal emoji."
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0016",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "怎么突然给我发消息呀！终于想我了！？",
+        "reference_en": "Why do you suddenly message me?! You finally think about me?!"
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0017",
+        "kind": "dialogue",
+        "speaker": "p",
+        "text": "滚滚滚，别这么肉麻。",
+        "reference_en": "Come on... Don't be so mushy.."
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0018",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "‹player_name›还是和小时候一样啊！",
+        "reference_en": "You're just like when we were kids, ‹player_name›!"
+      }
+    ],
+    "after": [
+      {
+        "id": "interactive:e83c33964b5025d122e7:0020",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "你直接回来签字呗。",
+        "reference_en": "Then you just come back and sign it."
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0021",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "我老妈已经说了你家要检修签字的事了，我还在猜你是不是因为这个来找我呢！",
+        "reference_en": "My mom already told me about the inspection form for your apartment. I'm wondering if that's why you message me!"
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0022",
+        "kind": "dialogue",
+        "speaker": "p",
+        "text": "就不能叙叙旧？",
+        "reference_en": "Can't we just catch up and chat with old friends?"
+      }
+    ],
+    "addressee": {
+      "speaker_id": "a",
+      "gender": "male"
+    },
+    "reference_en": "I message you because mom said I have to sign the community form in person. So I want to ask you about it.",
+    "reported_translation": "Я к тебе пришёл — мама сказала, что для подписи в общине нужно лично быть на месте, вот и решил спросить у тебя.",
+    "criteria": "В телефонной переписке герой пишет собеседнику из-за слов мамы; мама сказала не нарушает мужской род героя."
+  },
+  {
+    "id": "06-emberbound-0028",
+    "feature": "emotion-and-intent",
+    "source": "懒啊......刚被优化呢，大环境不好，我现在属于待机维修状态。",
+    "kind": "dialogue",
+    "speaker": "p",
+    "origin": "interactive",
+    "profile": {
+      "display_name": "[player_name]",
+      "gender": "male",
+      "profanity": "source",
+      "entity_type": "player",
+      "interpolation_variables": [
+        "player_name"
+      ]
+    },
+    "profiles": {
+      "a": {
+        "display_name": "晟阳",
+        "english_name": "Shengyang",
+        "russian_name": "Шэнъян",
+        "gender": "male",
+        "profanity": "source",
+        "entity_type": "person"
+      },
+      "p": {
+        "display_name": "[player_name]",
+        "gender": "male",
+        "profanity": "source",
+        "entity_type": "player",
+        "interpolation_variables": [
+          "player_name"
+        ]
+      }
+    },
+    "before": [
+      {
+        "id": "interactive:e83c33964b5025d122e7:0024",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "所以决定要回来了吗？",
+        "reference_en": "So, have you decided to come back?"
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0025",
+        "kind": "dialogue",
+        "speaker": "p",
+        "text": "还没想好。",
+        "reference_en": "Not yet."
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0026",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "还想啥？直接回来！",
+        "reference_en": "What are you think about? Just come back!"
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0027",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "正好老家这边最近还挺热闹的。",
+        "reference_en": "Things are quite lively back hometown lately."
+      }
+    ],
+    "after": [
+      {
+        "id": "interactive:e83c33964b5025d122e7:0029",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "这有啥的？回老家度个假嘛。",
+        "reference_en": "So what? Come home and take a vacation."
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0030",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "正好你阳哥闲得发闷。",
+        "reference_en": "Your buddy, I'm bored out of my mind."
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0031",
+        "kind": "dialogue",
+        "speaker": "p",
+        "text": "你啥时候不闲啊？从小就闲不住吧？",
+        "reference_en": "When aren't you bored? You've never been able to sit still."
+      }
+    ],
+    "addressee": {
+      "speaker_id": "a",
+      "gender": "male"
+    },
+    "reference_en": "I'm so lazy... I just got laid off, the overall environment is not good, I'm currently in standby maintenance mode.",
+    "reported_translation": "Лень... Только что меня сократили, общая обстановка ужасная, сейчас я просто в режиме ожидания.",
+    "criteria": "Сохранить самоиронию и обе части метафоры: режим ожидания и ремонт/восстановление."
+  },
+  {
+    "id": "07-emberbound-0029",
+    "feature": "emotion-and-intent",
+    "source": "这有啥的？回老家度个假嘛。",
+    "kind": "dialogue",
+    "speaker": "a",
+    "origin": "interactive",
+    "profile": {
+      "display_name": "晟阳",
+      "english_name": "Shengyang",
+      "russian_name": "Шэнъян",
+      "gender": "male",
+      "profanity": "source",
+      "entity_type": "person"
+    },
+    "profiles": {
+      "a": {
+        "display_name": "晟阳",
+        "english_name": "Shengyang",
+        "russian_name": "Шэнъян",
+        "gender": "male",
+        "profanity": "source",
+        "entity_type": "person"
+      },
+      "p": {
+        "display_name": "[player_name]",
+        "gender": "male",
+        "profanity": "source",
+        "entity_type": "player",
+        "interpolation_variables": [
+          "player_name"
+        ]
+      }
+    },
+    "before": [
+      {
+        "id": "interactive:e83c33964b5025d122e7:0025",
+        "kind": "dialogue",
+        "speaker": "p",
+        "text": "还没想好。",
+        "reference_en": "Not yet."
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0026",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "还想啥？直接回来！",
+        "reference_en": "What are you think about? Just come back!"
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0027",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "正好老家这边最近还挺热闹的。",
+        "reference_en": "Things are quite lively back hometown lately."
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0028",
+        "kind": "dialogue",
+        "speaker": "p",
+        "text": "懒啊......刚被优化呢，大环境不好，我现在属于待机维修状态。",
+        "reference_en": "I'm so lazy... I just got laid off, the overall environment is not good, I'm currently in standby maintenance mode."
+      }
+    ],
+    "after": [
+      {
+        "id": "interactive:e83c33964b5025d122e7:0030",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "正好你阳哥闲得发闷。",
+        "reference_en": "Your buddy, I'm bored out of my mind."
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0031",
+        "kind": "dialogue",
+        "speaker": "p",
+        "text": "你啥时候不闲啊？从小就闲不住吧？",
+        "reference_en": "When aren't you bored? You've never been able to sit still."
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0032",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "那不一样。",
+        "reference_en": "That's different."
+      }
+    ],
+    "addressee": {
+      "speaker_id": "p",
+      "gender": "male"
+    },
+    "reference_en": "So what? Come home and take a vacation.",
+    "reported_translation": "Что тут такого? Вернусь домой в отпуск.",
+    "criteria": "Совет собеседнику вернуться в родной город и отдохнуть; не обещание говорящего самому вернуться."
+  },
+  {
+    "id": "08-emberbound-0030",
+    "feature": "emotion-and-intent",
+    "source": "正好你阳哥闲得发闷。",
+    "kind": "dialogue",
+    "speaker": "a",
+    "origin": "interactive",
+    "profile": {
+      "display_name": "晟阳",
+      "english_name": "Shengyang",
+      "russian_name": "Шэнъян",
+      "gender": "male",
+      "profanity": "source",
+      "entity_type": "person"
+    },
+    "profiles": {
+      "a": {
+        "display_name": "晟阳",
+        "english_name": "Shengyang",
+        "russian_name": "Шэнъян",
+        "gender": "male",
+        "profanity": "source",
+        "entity_type": "person"
+      },
+      "p": {
+        "display_name": "[player_name]",
+        "gender": "male",
+        "profanity": "source",
+        "entity_type": "player",
+        "interpolation_variables": [
+          "player_name"
+        ]
+      }
+    },
+    "before": [
+      {
+        "id": "interactive:e83c33964b5025d122e7:0026",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "还想啥？直接回来！",
+        "reference_en": "What are you think about? Just come back!"
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0027",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "正好老家这边最近还挺热闹的。",
+        "reference_en": "Things are quite lively back hometown lately."
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0028",
+        "kind": "dialogue",
+        "speaker": "p",
+        "text": "懒啊......刚被优化呢，大环境不好，我现在属于待机维修状态。",
+        "reference_en": "I'm so lazy... I just got laid off, the overall environment is not good, I'm currently in standby maintenance mode."
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0029",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "这有啥的？回老家度个假嘛。",
+        "reference_en": "So what? Come home and take a vacation."
+      }
+    ],
+    "after": [
+      {
+        "id": "interactive:e83c33964b5025d122e7:0031",
+        "kind": "dialogue",
+        "speaker": "p",
+        "text": "你啥时候不闲啊？从小就闲不住吧？",
+        "reference_en": "When aren't you bored? You've never been able to sit still."
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0032",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "那不一样。",
+        "reference_en": "That's different."
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0033",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "你回来，我带你吃烧烤嘛。",
+        "reference_en": "Come back and I'll take you out for barbecue."
+      }
+    ],
+    "addressee": {
+      "speaker_id": "p",
+      "gender": "male"
+    },
+    "reference_en": "Your buddy, I'm bored out of my mind.",
+    "reported_translation": "Как раз у меня сейчас полная простоя — сидю без дела.",
+    "criteria": "Говорящий скучает от безделья и игриво обозначает себя; не другой человек и не слово бездельница."
+  },
+  {
+    "id": "09-emberbound-0035",
+    "feature": "emotion-and-intent",
+    "source": "那烧烤摊可好吃了，旁边的河还修了栈道呢。",
+    "kind": "dialogue",
+    "speaker": "a",
+    "origin": "interactive",
+    "profile": {
+      "display_name": "晟阳",
+      "english_name": "Shengyang",
+      "russian_name": "Шэнъян",
+      "gender": "male",
+      "profanity": "source",
+      "entity_type": "person"
+    },
+    "profiles": {
+      "a": {
+        "display_name": "晟阳",
+        "english_name": "Shengyang",
+        "russian_name": "Шэнъян",
+        "gender": "male",
+        "profanity": "source",
+        "entity_type": "person"
+      },
+      "p": {
+        "display_name": "[player_name]",
+        "gender": "male",
+        "profanity": "source",
+        "entity_type": "player",
+        "interpolation_variables": [
+          "player_name"
+        ]
+      }
+    },
+    "before": [
+      {
+        "id": "interactive:e83c33964b5025d122e7:0031",
+        "kind": "dialogue",
+        "speaker": "p",
+        "text": "你啥时候不闲啊？从小就闲不住吧？",
+        "reference_en": "When aren't you bored? You've never been able to sit still."
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0032",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "那不一样。",
+        "reference_en": "That's different."
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0033",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "你回来，我带你吃烧烤嘛。",
+        "reference_en": "Come back and I'll take you out for barbecue."
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0034",
+        "kind": "dialogue",
+        "speaker": "p",
+        "text": "就这？",
+        "reference_en": "That's it?"
+      }
+    ],
+    "after": [
+      {
+        "id": "interactive:e83c33964b5025d122e7:0036",
+        "kind": "dialogue",
+        "speaker": "p",
+        "text": "听起来，还不错嘛？",
+        "reference_en": "That actually sounds pretty nice."
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0037",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "而且还有我。",
+        "reference_en": "And you'll have me."
+      },
+      {
+        "id": "interactive:e83c33964b5025d122e7:0038",
+        "kind": "narration",
+        "speaker": "",
+        "text": "？......",
+        "reference_en": "What...?"
+      }
+    ],
+    "addressee": {
+      "speaker_id": "p",
+      "gender": "male"
+    },
+    "reference_en": "That barbecue place is amazing, and they built a boardwalk by the river.",
+    "reported_translation": "Этот место с барбекю просто вкуснейшее, а рядом с рекой даже проложили дорожку.",
+    "criteria": "Еда вкусная, место не вкуснейшее; согласовать место как средний род, не переносить время из другой части."
+  },
+  {
+    "id": "10-emberbound-0018",
+    "feature": "emotion-and-intent",
+    "source": "别这么肉麻啦！",
+    "kind": "dialogue",
+    "speaker": "p",
+    "origin": "interactive",
+    "profile": {
+      "display_name": "[player_name]",
+      "gender": "male",
+      "profanity": "source",
+      "entity_type": "player",
+      "interpolation_variables": [
+        "player_name"
+      ]
+    },
+    "profiles": {
+      "a": {
+        "display_name": "晟阳",
+        "english_name": "Shengyang",
+        "russian_name": "Шэнъян",
+        "gender": "male",
+        "profanity": "source",
+        "entity_type": "person"
+      },
+      "mom": {
+        "display_name": "老妈",
+        "english_name": "Mom",
+        "russian_name": "Мама",
+        "gender": "female",
+        "profanity": "source",
+        "entity_type": "person"
+      },
+      "p": {
+        "display_name": "[player_name]",
+        "gender": "male",
+        "profanity": "source",
+        "entity_type": "player",
+        "interpolation_variables": [
+          "player_name"
+        ]
+      }
+    },
+    "before": [
+      {
+        "id": "interactive:c72f4a59fbe38e843da0:0014",
+        "kind": "narration",
+        "speaker": "",
+        "text": "太久没见。",
+        "reference_en": "It was been too long that we didn't meet.."
+      },
+      {
+        "id": "interactive:c72f4a59fbe38e843da0:0015",
+        "kind": "narration",
+        "speaker": "",
+        "text": "也太久没这么聊天了。",
+        "reference_en": "And also been so long since we've had a chat like this."
+      },
+      {
+        "id": "interactive:c72f4a59fbe38e843da0:0016",
+        "kind": "dialogue",
+        "speaker": "p",
+        "text": "咋突然想起来给我发消息？",
+        "reference_en": "Why did you suddenly think of sending me a message?"
+      },
+      {
+        "id": "interactive:c72f4a59fbe38e843da0:0017",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "咋，哥想你了不行？",
+        "reference_en": "What, can't a guy miss you?"
+      }
+    ],
+    "after": [
+      {
+        "id": "interactive:c72f4a59fbe38e843da0:0019",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "都从小长到大的哥们！不用这么拘谨！",
+        "reference_en": "We've been buddies since we were kids! No need to be shy!"
+      },
+      {
+        "id": "interactive:c72f4a59fbe38e843da0:0020",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "找你是因为老妈说你家要签字，又问我还有没有在和你联系。",
+        "reference_en": "Mom said your place needs a signature, then asked if I was still in touch with you."
+      },
+      {
+        "id": "interactive:c72f4a59fbe38e843da0:0021",
+        "kind": "dialogue",
+        "speaker": "a",
+        "text": "所以我就想着上来看看，没想到你居然在线呢！",
+        "reference_en": "So I log on to check—and there you are!"
+      }
+    ],
+    "addressee": {
+      "speaker_id": "a",
+      "gender": "male"
+    },
+    "reference_en": "Don't be so mushy!",
+    "reported_translation": "Хватит уже всяких цветистостей!",
+    "criteria": "Смущение/отмахивание в разговоре друзей; живой разговорный русский, не цветистости."
+  }
+]

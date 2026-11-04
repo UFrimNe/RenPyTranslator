@@ -1,0 +1,111 @@
+{
+  "source_language": "auto",
+  "target_language": "Russian",
+  "target_language_code": "ru",
+  "renpy_language": "russian",
+  "provider": {
+    "type": "openai_compatible",
+    "model": "rpts-local",
+    "base_url": "http://127.0.0.1:8091/v1",
+    "endpoint": "/chat/completions",
+    "api_key_env": "RPTS_LOCAL_AI_KEY",
+    "timeout_seconds": 600,
+    "temperature": 0.7,
+    "top_p": 0.8,
+    "top_k": 20,
+    "min_p": 0.0,
+    "repeat_penalty": null,
+    "presence_penalty": 1.5,
+    "constrain_russian": true,
+    "max_retries": 1,
+    "retry_delay_seconds": 1,
+    "structured_json": true,
+    "compact_json": true,
+    "response_protocol": "anchored_keys",
+    "model_identity": "qwen3.5-9b:03b74727a860a56338e042c4420bb3f04b2fec5734175f4cb9fa853daf52b7e8",
+    "enable_thinking": false,
+    "cache_prompt": true,
+    "context_limit_tokens": 6144,
+    "token_preflight": true,
+    "max_output_tokens": 2048,
+    "output_token_factor": 2.0,
+    "output_token_min": 160
+  },
+  "batch": {
+    "max_segments": 8,
+    "max_chars": 2200,
+    "mode_max_segments": {
+      "story": 8,
+      "dialogue": 8,
+      "narration": 8,
+      "ui": 10
+    }
+  },
+  "context": {
+    "previous": 4,
+    "next": 3
+  },
+  "translation": {
+    "use_existing_translation_memory": false,
+    "include_statuses": [
+      "pending",
+      "error"
+    ],
+    "refresh_legacy_ai": true,
+    "skip_nonlinguistic": true,
+    "channels": [
+      "semantic",
+      "localization"
+    ],
+    "stop_on_batch_error": true,
+    "progress_every_batches": 1,
+    "split_on_response_error": true,
+    "continue_on_single_response_error": true,
+    "no_reasoning": true,
+    "concurrent_batches": 1
+  },
+  "validation": {
+    "reject_empty": true,
+    "max_length_ratio": 8.0,
+    "min_source_chars_for_ratio": 20
+  },
+  "quality": {
+    "enabled": true,
+    "scene_aware_batches": true,
+    "shared_scene_context": true,
+    "russian_localization": true,
+    "profile_sample_lines": 12,
+    "profile_max_chars": 7200,
+    "profile_gender_min_confidence": 0.85,
+    "profile_output_tokens": 2048,
+    "profile_protocol": "11.7",
+    "translation_protocol": "11.26",
+    "text_mode": "reviewed",
+    "editorial_pass": false,
+    "fidelity_pass": false,
+    "combined_review": true,
+    "stage_checkpoints": true,
+    "stop_on_profile_error": true,
+    "scene_context_max_chars": 4200,
+    "deterministic_gender_fallback": false,
+    "repair_attempts": 2,
+    "use_english_reference": true,
+    "auto_profile_characters": true,
+    "repair_validation_errors": true,
+    "max_profile_items_per_call": 8,
+    "character_profiles_file": "work/quality/character_profiles.json",
+    "quality_dir": "work/quality",
+    "native_free_review": false
+  },
+  "performance": {
+    "profile_version": "11.18",
+    "auto_benchmark": true,
+    "recommended_workers": 1,
+    "runtime_context_size": 6144,
+    "runtime_context_per_slot": 6144,
+    "compact_json": true,
+    "shared_scene_context": true
+  },
+  "glossary": {},
+  "notes": "Сохраняй авторский смысл, голос персонажей, юмор и откровенность сцен. Не добавляй объяснения от переводчика."
+}

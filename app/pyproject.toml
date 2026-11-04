@@ -1,0 +1,22 @@
+[project]
+name = "renpy-translator"
+version = "0.11.26"
+description = "End-to-end Ren'Py translation toolkit with local AI, free Google translation, compiled-script extraction, SQLite projects, patch generation and install."
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+rpts-audit = "rpts.audit:main"
+rpts-game-audit = "rpts.game_audit:main"
+rpts-translate = "rpts.translation_engine:main"
+rpts-patch = "rpts.patch_project:main"
+
+[build-system]
+requires = ["setuptools>=70"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

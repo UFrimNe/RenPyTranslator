@@ -1,0 +1,41 @@
+{
+  "source_language": "auto",
+  "target_language": "Russian",
+  "target_language_code": "russian",
+  "provider": {
+    "type": "openai_compatible",
+    "base_url": "https://YOUR-ENDPOINT/v1",
+    "endpoint": "/chat/completions",
+    "model": "YOUR-MODEL",
+    "api_key_env": "RPTS_API_KEY",
+    "timeout_seconds": 120,
+    "temperature": 0.2,
+    "max_retries": 2,
+    "retry_delay_seconds": 2
+  },
+  "batch": {
+    "max_segments": 8,
+    "max_chars": 8000
+  },
+  "context": {
+    "previous": 2,
+    "next": 2
+  },
+  "translation": {
+    "use_existing_translation_memory": true,
+    "include_statuses": [
+      "pending",
+      "error"
+    ],
+    "channels": [
+      "semantic"
+    ]
+  },
+  "glossary": {},
+  "notes": "",
+  "validation": {
+    "reject_empty": true,
+    "max_length_ratio": 6.0,
+    "min_source_chars_for_ratio": 20
+  }
+}

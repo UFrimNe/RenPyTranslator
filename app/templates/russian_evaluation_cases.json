@@ -1,0 +1,477 @@
+[
+  {
+    "id": "en_sarcasm",
+    "feature": "Сарказм",
+    "source": "Great. Just what I needed.",
+    "context": "A broken pipe floods the character's room. The character stares at the ruined bed.",
+    "profile": {
+      "gender": "male",
+      "style": "Dry, restrained humour"
+    },
+    "criteria": "Раздражённая ирония; без искреннего восторга и придуманных оскорблений."
+  },
+  {
+    "id": "en_sincere",
+    "feature": "Та же фраза, другой смысл",
+    "source": "Great. Just what I needed.",
+    "context": "A friend brings the exact missing tool. The character smiles with relief.",
+    "profile": {
+      "gender": "male",
+      "style": "Dry, restrained humour"
+    },
+    "criteria": "Искренняя благодарность; профиль ироничного персонажа не делает каждую фразу сарказмом."
+  },
+  {
+    "id": "en_idiom",
+    "feature": "Идиома",
+    "source": "Break a leg!",
+    "context": "A friend wishes the actress luck before her first stage performance.",
+    "criteria": "Пожелание удачи, без буквального перелома ноги."
+  },
+  {
+    "id": "en_insult",
+    "feature": "Мат и отрицание",
+    "source": "Don't fucking touch her.",
+    "context": "A furious man steps between his friend and an attacker.",
+    "profile": {
+      "gender": "male",
+      "style": "Blunt, coarse when angry",
+      "profanity": "source"
+    },
+    "criteria": "Сохранить запрет, объект «её», угрозу и силу мата. Не заменять это просьбой."
+  },
+  {
+    "id": "en_neutral_coarse",
+    "feature": "Нейтральная реплика грубого персонажа",
+    "source": "The train leaves at six.",
+    "context": "The same blunt character reads the departure board.",
+    "profile": {
+      "gender": "male",
+      "style": "Blunt and often coarse",
+      "profanity": "source"
+    },
+    "criteria": "Передать время отправления; не добавлять мат без основания в реплике."
+  },
+  {
+    "id": "en_soft_insult",
+    "feature": "Степень грубости",
+    "source": "Oh, damn it.",
+    "context": "A character drops a pencil while calmly taking notes.",
+    "criteria": "Умеренное раздражение; не превращать слабое ругательство в сильную матерную тираду."
+  },
+  {
+    "id": "en_formal",
+    "feature": "Вы",
+    "source": "Would you please wait outside?",
+    "context": "A polite receptionist addresses an unfamiliar visitor.",
+    "profile": {
+      "gender": "female",
+      "style": "Professional and courteous",
+      "address": "вы",
+      "register": "formal"
+    },
+    "criteria": "Вежливое «вы», естественный русский вопрос или просьба."
+  },
+  {
+    "id": "en_friend",
+    "feature": "Ты",
+    "source": "Would you please wait outside?",
+    "context": "A tired young woman asks her close friend to leave a dressing room for a moment.",
+    "profile": {
+      "gender": "female",
+      "style": "Casual with friends",
+      "address": "contextual"
+    },
+    "criteria": "Обращение к близкому другу на «ты», без канцелярского тона."
+  },
+  {
+    "id": "en_gender_male",
+    "feature": "Род и согласование",
+    "source": "I was ready, but I changed my mind.",
+    "profile": {
+      "gender": "male"
+    },
+    "criteria": "Мужской род во всех связанных формах, сохранить смену решения."
+  },
+  {
+    "id": "en_gender_female",
+    "feature": "Род и согласование",
+    "source": "I was ready, but I changed my mind.",
+    "profile": {
+      "gender": "female"
+    },
+    "criteria": "Женский род во всех связанных формах."
+  },
+  {
+    "id": "en_quote",
+    "feature": "Чужая цитата",
+    "source": "She told me, \"I was ready.\" I didn't believe her.",
+    "profile": {
+      "gender": "male"
+    },
+    "criteria": "В цитате говорит женщина, вне цитаты мужчина. Не исправлять женский род цитаты на мужской."
+  },
+  {
+    "id": "en_uncertain_gender",
+    "feature": "Неизвестный пол",
+    "source": "I was wrong.",
+    "profile": {
+      "gender": "unknown"
+    },
+    "criteria": "Естественная нейтральная фраза без угаданного пола и без вариантов через скобки."
+  },
+  {
+    "id": "en_negation",
+    "feature": "Неуверенность и отрицание",
+    "source": "I don't think he meant to hurt you.",
+    "criteria": "Сохранить предположение говорящего, отрицание намерения, различие между «он» и «ты»."
+  },
+  {
+    "id": "en_markup",
+    "feature": "Разметка и переменная",
+    "source": "{b}Listen{/b}, [player_name]. You promised.",
+    "context": "A friend reminds the player about an earlier promise.",
+    "criteria": "Сохранить {b}, {/b}, [player_name] ровно один раз и в исходном порядке; перевести окружающий текст."
+  },
+  {
+    "id": "en_ui",
+    "feature": "Интерфейс",
+    "kind": "ui",
+    "source": "Return to Main Menu",
+    "criteria": "Краткая стандартная подпись интерфейса, без художественного диалога."
+  },
+  {
+    "id": "zh_sarcasm",
+    "feature": "Китайская ирония",
+    "source": "你可真行。",
+    "reference_en": "You're really something.",
+    "context": "A friend has just broken the only working computer while showing off.",
+    "criteria": "Контекстная ирония; не воспринимать как однозначную похвалу."
+  },
+  {
+    "id": "zh_praise",
+    "feature": "Китайская похвала",
+    "source": "你可真行。",
+    "reference_en": "You're really something.",
+    "context": "A friend has repaired the only working computer against all odds.",
+    "criteria": "Та же фраза — искренняя похвала в этой сцене."
+  },
+  {
+    "id": "zh_resignation",
+    "feature": "Частицы и уступка",
+    "source": "行吧，随你。",
+    "reference_en": "Fine, do as you like.",
+    "context": "After a long disagreement the speaker gives up arguing, without becoming cheerful.",
+    "criteria": "Уступка с досадой или усталостью; без придуманного сильного гнева."
+  },
+  {
+    "id": "zh_idiom",
+    "feature": "Китайская идиома",
+    "source": "少来这套。",
+    "reference_en": "Don't give me that.",
+    "context": "The listener repeats an excuse the speaker has heard many times.",
+    "criteria": "Отвергнуть знакомую отговорку; не переводить буквально про комплект вещей."
+  },
+  {
+    "id": "zh_defensive",
+    "feature": "Отрицание и эмоция",
+    "source": "我才没哭呢。",
+    "reference_en": "I wasn't crying!",
+    "context": "The speaker wipes their eyes and tries to deny crying.",
+    "profile": {
+      "gender": "unknown"
+    },
+    "criteria": "Сохранить защитное отрицание, не угадывать пол, не добавлять факт плача от лица повествователя."
+  },
+  {
+    "id": "zh_obscenity_anchor",
+    "feature": "Мат при смягчённой английской опоре",
+    "source": "他妈的，别碰她！",
+    "reference_en": "Damn it, don't touch her!",
+    "context": "A furious character protects a woman from an attacker.",
+    "profile": {
+      "gender": "male",
+      "style": "Blunt under threat",
+      "profanity": "source"
+    },
+    "criteria": "Оригинал имеет приоритет над смягчённой английской опорой; сохранить грубость и запрет трогать её."
+  },
+  {
+    "id": "zh_implied_subject",
+    "feature": "Опущенное подлежащее",
+    "source": "算了，我自己来。",
+    "reference_en": "Forget it, I'll do it myself.",
+    "context": "The speaker takes a tool from a hesitant helper and starts doing the task.",
+    "profile": {
+      "gender": "female"
+    },
+    "criteria": "Естественная фраза о самостоятельном действии, женское «сама», без изменения того, кто действует."
+  },
+  {
+    "id": "zh_treat_guest",
+    "feature": "Кто кого угощает",
+    "source": "再说了，难得回来一趟，哥不得带你吃点好的？",
+    "reference_en": "Besides, you don't come back often. I should treat you to something good, right?",
+    "context": "Two close male friends are eating skewers after one returned to his hometown. The local friend jokes that he should treat the visitor. 哥 is playful self-reference.",
+    "profile": {
+      "gender": "male",
+      "style": "Informal, friendly"
+    },
+    "criteria": "Угощает говорящий, гость принимает угощение. Живая дружеская реплика. Не менять участников местами и не добавлять брата как нового персонажа."
+  },
+  {
+    "id": "zh_rhetorical_hearing",
+    "feature": "Риторический вопрос",
+    "source": "……你要不要听听你自己在说什么？",
+    "reference_en": "...Do you hear yourself?",
+    "context": "A friend has just made an absurd excuse. The speaker objects with disbelief.",
+    "profile": {
+      "gender": "male"
+    },
+    "criteria": "Естественное недоверие вроде «Ты сам-то слышишь, что говоришь?», без буквального предложения послушать запись или проверки слуха."
+  },
+  {
+    "id": "zh_asleep_joke",
+    "feature": "Шутка в разговоре с мамой",
+    "source": "嗯，我现在正在以梦话的状态和老妈你打电话。",
+    "reference_en": "Yeah. I'm talking to you in my sleep right now.",
+    "context": "A young man jokingly answers his mother after she asks whether he is sleeping.",
+    "profile": {
+      "gender": "male"
+    },
+    "criteria": "Живая шутливая реплика, без оборота «в состоянии сна», без добавленных шуток и медицинских подробностей."
+  },
+  {
+    "id": "zh_food_order",
+    "feature": "Блюдо, количество и пожелание",
+    "source": "老板！再来二十串大肉串，辣一点！",
+    "reference_en": "Pitmaster! Twenty more meat skewers! More spicy!",
+    "context": "An informal order to the cook at a Chinese outdoor skewer stall.",
+    "profile": {
+      "gender": "male"
+    },
+    "criteria": "Ещё двадцать мясных шашлычков/шампуров, поострее. Не заменять остроту чистотой или количеством. Привычная разговорная просьба без новых фактов."
+  },
+  {
+    "id": "zh_no_food_competition",
+    "feature": "Поддразнивание без кальки",
+    "source": "喂……你是饕餮吗？又没人跟你抢。",
+    "reference_en": "Hey... are you some kind of glutton? No one will steal the food from you.",
+    "context": "A young man teases his male friend who eats too quickly.",
+    "profile": {
+      "gender": "male"
+    },
+    "criteria": "Поддразнивание прожорливого друга: никто еду не отнимает. Не путать прожорливость с жадностью и не придумывать сильные оскорбления."
+  },
+  {
+    "id": "zh_old_house_subject",
+    "feature": "Опущенный субъект в споре",
+    "source": "话是这么说没错啦，可老屋什么都没有，生活很不方便欸。而且还是一个人住，连个说话的人都没有啊。",
+    "reference_en": "Sure, but the old house has nothing in it. Living there would be a pain. And I'd be all alone, with nobody to even talk to.",
+    "context": "A son argues with his mother about her suggestion that he stay in their old house alone. He describes his own prospective life there.",
+    "profile": {
+      "gender": "male"
+    },
+    "criteria": "Один жить будет сын, не мать. Естественное возражение матери без мужского «ты прав» и без смены того, кто переезжает."
+  },
+  {
+    "id": "zh_catch_bottle",
+    "feature": "Короткая реплика зависит от действия",
+    "source": "接着。",
+    "reference_en": "Catch.",
+    "context": "A man tosses a bottle of water to his friend while saying this.",
+    "profile": {
+      "gender": "male"
+    },
+    "criteria": "Побуждение поймать бутылку, например «Лови». Не «Дальше», не пересказ действия повествователем."
+  },
+  {
+    "id": "zh_freelance_work",
+    "feature": "Привычное название работы",
+    "source": "我是个自由摄影师。",
+    "reference_en": "I'm a freelance photographer.",
+    "context": "A male visitor tells a new acquaintance how he earns his living.",
+    "profile": {
+      "gender": "male"
+    },
+    "criteria": "Фотограф работает на себя/на фрилансе; без двусмысленного «свободный фотограф» и без новых сведений о работе."
+  },
+  {
+    "id": "zh_narrator_omitted_i",
+    "feature": "Внутренний голос мужчины без обязательного я",
+    "kind": "narration",
+    "source": "发完这条消息后，我把手机扣在枕边，闭上眼睛。",
+    "reference_en": "After sending that, I placed my phone facedown beside my pillow and closed my eyes.",
+    "profile": {
+      "gender": "male"
+    },
+    "criteria": "Герой мужчина. Сохранить отправку сообщения, телефон экраном вниз у подушки и закрытые глаза; не использовать отправила/положила/закрыла."
+  },
+  {
+    "id": "zh_unknown_catalogue_speaker",
+    "feature": "Телефонная строка без установленного говорящего",
+    "kind": "localized_string",
+    "source": "好家伙你终于上线了！",
+    "reference_en": "Well, look who finally came online!",
+    "criteria": "Живое приветствие с лёгким поддразниванием. Не придумывать имя или пол говорящего и не добавлять мат только ради разговорности."
+  },
+  {
+    "id": "report_mom_listener",
+    "feature": "Мать обращается к мужчине",
+    "source": "好啦好啦，那辛苦你咯[player_name]。",
+    "profile": {
+      "gender": "female",
+      "style": "Тёплая речь матери"
+    },
+    "addressee": {
+      "speaker_id": "p",
+      "gender": "male"
+    },
+    "profiles": {
+      "p": {
+        "gender": "male",
+        "interpolation_variables": [
+          "player_name"
+        ]
+      }
+    },
+    "context": "A mother acknowledges the effort of her son, the player. No one has arrived in this line.",
+    "criteria": "Мужской род собеседника, не выдумывать приход; сохранить маркер."
+  },
+  {
+    "id": "report_arm_subject",
+    "feature": "Род предмета и объект действия",
+    "source": "那手臂把我抱起来，放在一片温暖的、毛茸茸的草原上。",
+    "kind": "narration",
+    "viewpoint": {
+      "gender": "male"
+    },
+    "reference_en": "Those arms lifted me and placed me upon a warm, furry grassland.",
+    "context": "A male viewpoint character is being lifted by someone else. The furry grassland is a metaphor in his perception.",
+    "criteria": "Герой является объектом. Согласовать глаголы с руками; сохранить образ, не объявлять героя женщиной."
+  },
+  {
+    "id": "report_sigh",
+    "feature": "Полный перевод междометия",
+    "source": "哎......",
+    "kind": "narration",
+    "reference_en": "Sigh...",
+    "criteria": "Естественный русский вздох без Сigh/SIGH и пояснений."
+  },
+  {
+    "id": "phone_self_reference",
+    "feature": "Шутливая похвала себе в переписке",
+    "source": "哥的背影很帅是吧！",
+    "profile": {
+      "gender": "male"
+    },
+    "context": "Shengyang is teasing the male player about his own photo that he posted. He refers to himself as 哥, not to an absent brother.",
+    "criteria": "Передать самодовольную шутку о своей фотографии; не приписывать внешность третьему лицу."
+  },
+  {
+    "id": "phone_photo",
+    "feature": "Контекст публикации в соцсети",
+    "source": "倒是你，你这动态照片......",
+    "profile": {
+      "gender": "male"
+    },
+    "context": "The male player is looking at a photo Shengyang posted on his social feed after many years without contact.",
+    "criteria": "动态 здесь публикация в соцсети, не динамическая фотография. Сохранить недосказанность."
+  },
+  {
+    "id": "scene_strangers",
+    "feature": "Дистанция между незнакомцами",
+    "source": "你可真会说话。",
+    "speaker": "a",
+    "before": [
+      {
+        "kind": "narration",
+        "speaker": "",
+        "text": "这是他们第一次见面。对方礼貌地夸了一句。"
+      }
+    ],
+    "criteria": "Сдержанная реакция при первом знакомстве. Не добавлять дружескую фамильярность или романтику."
+  },
+  {
+    "id": "scene_old_friends",
+    "feature": "Та же фраза между старыми друзьями",
+    "source": "你可真会说话。",
+    "speaker": "a",
+    "before": [
+      {
+        "kind": "narration",
+        "speaker": "",
+        "text": "他们是从小一起长大的朋友。对方又在开玩笑地夸他。"
+      }
+    ],
+    "criteria": "Живой дружеский подкол по ситуации, без церемонной вежливости и настоящего оскорбления."
+  },
+  {
+    "id": "scene_warming",
+    "feature": "Сближение без установленного романа",
+    "source": "下次还一起走吗？",
+    "speaker": "a",
+    "before": [
+      {
+        "kind": "narration",
+        "speaker": "",
+        "text": "几次见面后，他们渐渐熟悉了。说话时不再像初次见面那么拘谨。"
+      }
+    ],
+    "criteria": "Постепенное тепло и осторожное предложение. Не добавлять признание, ласковое обращение или статус пары."
+  },
+  {
+    "id": "scene_remind_joke",
+    "feature": "Шутка с намеренным повтором",
+    "source": "就是担心我忘了，所以才提醒你记得提醒我嘛。",
+    "speaker": "a",
+    "before": [
+      {
+        "kind": "narration",
+        "speaker": "",
+        "text": "就是我的发小——晟阳。"
+      },
+      {
+        "kind": "dialogue",
+        "speaker": "p",
+        "text": "你自己记得不就行了吗？"
+      }
+    ],
+    "criteria": "Сохранить круговое напоминание и роли: напоминаю тебе, чтобы ты напомнил мне. Не сокращать до обычной просьбы."
+  },
+  {
+    "id": "scene_childhood_quote",
+    "feature": "Реплика друга в детском воспоминании",
+    "source": "“[player_name]，走！哥带你去买冰棍！”",
+    "kind": "narration",
+    "before": [
+      {
+        "kind": "narration",
+        "speaker": "",
+        "text": "他的声音从记忆里传来。我们从小就是朋友。"
+      }
+    ],
+    "after": [
+      {
+        "kind": "narration",
+        "speaker": "",
+        "text": "那都是初中时的事了。"
+      }
+    ],
+    "criteria": "Живая прямая речь в воспоминании. 哥 не создаёт буквального брата. Сохранить маркер и кавычки; не приписывать современную романтическую близость."
+  },
+  {
+    "id": "scene_time_plan",
+    "feature": "План относительно момента речи в прошлом",
+    "source": "明天我再来找你。",
+    "speaker": "a",
+    "before": [
+      {
+        "kind": "narration",
+        "speaker": "",
+        "text": "他想起三年前的那个晚上。那时他们刚刚认识。"
+      }
+    ],
+    "criteria": "Завтра относится к тому вечеру три года назад. Сохранить план говорящего и тогдашнюю дистанцию; не подставлять сегодняшнюю дату и позднюю близость."
+  }
+]
