@@ -22,7 +22,7 @@ try {
     $Version = (Get-Content app/VERSION.txt -Raw).Trim()
     $Tag = "v$Version"
     $Stem = "RenPyTranslator_$($Version.Replace('.','_'))"
-    $Assets = @("dist/$($Stem)_win64.zip", "dist/RenPyTranslator_$($Version)_Setup_win64.exe", "dist/$($Stem)_source.zip", 'dist/update.json', 'dist/SHA256SUMS.txt')
+    $Assets = @("dist/$($Stem)_win64.zip", "dist/RenPyTranslator_$($Version)_Setup_win64.exe", "dist/$($Stem)_source.zip", 'dist/update.json', 'dist/SHA256SUMS.txt', 'dist/installer-size-report.json')
     foreach ($Asset in $Assets) { if (-not (Test-Path $Asset)) { throw "Missing release asset: $Asset" } }
     $Existing = Get-VersionRelease $Tag
     $Exists = $null -ne $Existing

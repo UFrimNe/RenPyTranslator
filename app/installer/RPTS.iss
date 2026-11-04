@@ -1,5 +1,8 @@
 #ifndef AppVersion
-  #define AppVersion "11.28"
+  #define AppVersion "11.29"
+#endif
+#ifndef CompressionPreset
+  #define CompressionPreset "lzma2/ultra64"
 #endif
 #ifndef PayloadDir
   #error PayloadDir is required: run Build.bat from the repository root.
@@ -27,7 +30,8 @@ SetupIconFile=..\desktop\src\app.ico
 UninstallDisplayIcon={app}\RPTS.exe
 OutputDir={#ArtifactDir}
 OutputBaseFilename=RenPyTranslator_{#AppVersion}_Setup_win64
-Compression=lzma2/fast
+Compression={#CompressionPreset}
+LZMAUseSeparateProcess=yes
 SolidCompression=yes
 AppMutex=Local\RPTS-Running
 SetupMutex=Local\RPTS-Setup

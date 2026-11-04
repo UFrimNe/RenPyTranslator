@@ -19,9 +19,9 @@
 
 | Что скачать | Для чего |
 | --- | --- |
-| [**Установщик EXE**](https://github.com/UFrimNe/RenPyTranslator/releases/latest/download/RenPyTranslator_11.28_Setup_win64.exe) | Установить полную программу и создать ярлык. Python и .NET уже в комплекте. |
-| [**Portable ZIP**](https://github.com/UFrimNe/RenPyTranslator/releases/latest/download/RenPyTranslator_11_28_win64.zip) | Распаковать в удобную папку и открыть **RPTS.exe**. Установка не требуется. |
-| [**Исходники ZIP**](https://github.com/UFrimNe/RenPyTranslator/releases/latest/download/RenPyTranslator_11_28_source.zip) | Изучить код, изменить программу или собрать свою копию через **Build.bat**. |
+| [**Установщик EXE**](https://github.com/UFrimNe/RenPyTranslator/releases/latest/download/RenPyTranslator_11.29_Setup_win64.exe) | Установить полную программу и создать ярлык. Python и .NET уже в комплекте. |
+| [**Portable ZIP**](https://github.com/UFrimNe/RenPyTranslator/releases/latest/download/RenPyTranslator_11_29_win64.zip) | Распаковать в удобную папку и открыть **RPTS.exe**. Установка не требуется. |
+| [**Исходники ZIP**](https://github.com/UFrimNe/RenPyTranslator/releases/latest/download/RenPyTranslator_11_29_source.zip) | Изучить код, изменить программу или собрать свою копию через **Build.bat**. |
 
 1. Открой программу через ярлык или `RPTS.exe`.
 2. Добавь папку игры и выбери локальную модель. При первом запуске загрузятся модель и движок.
@@ -127,7 +127,7 @@ Windows CI проверяет исходники и интерфейс, соби
 Для нового релиза меняются `app/VERSION.txt` и заметки в `docs/releases`.
 Сейчас используется только `main`; дополнительная ветка разработки временно убрана.
 
-[Разработка](docs/DEVELOPMENT.md) · [Устройство обновлений](docs/UPDATES.md) · [Изменения 11.28](docs/CHANGELOG_11_28.md)
+[Разработка](docs/DEVELOPMENT.md) · [Устройство обновлений](docs/UPDATES.md) · [Изменения 11.29](docs/CHANGELOG_11_29.md)
 
 </details>
 

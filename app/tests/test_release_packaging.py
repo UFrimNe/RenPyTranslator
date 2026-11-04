@@ -32,9 +32,10 @@ class ReleasePackagingTests(unittest.TestCase):
     def test_distribution_requires_root_exe_and_excludes_user_data(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            for rel in REQUIRED | {'runtime/local_ai/model.gguf', 'data/projects/game.sqlite', 'Build.bat'}:
+            for rel in REQUIRED | {'runtime/local_ai/model.gguf', 'data/projects/game.sqlite', 'Build.bat', 'app/desktop/bin/debug.pdb', 'runtime/dotnet/debug.pdb', 'runtime/python/test.pdb'}:
                 path = root/rel; path.parent.mkdir(parents=True, exist_ok=True); path.write_bytes(b'fixture')
             names = distribution_files(root)
+            self.assertFalse(any(p.endswith('.pdb') for p in names))
             self.assertIn('RPTS.exe', names)
             self.assertIn('Build.bat', names)
             self.assertNotIn('runtime/local_ai/model.gguf', names)

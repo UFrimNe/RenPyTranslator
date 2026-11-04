@@ -47,6 +47,9 @@ jobs:
       - name: Build EXE, complete portable ZIP, installer and sources
         shell: pwsh
         run: ./app/tools/build-release.ps1 -SkipTests -BuildId ${{ github.sha }} -BuildNumber ${{ github.run_id }}
+      - name: Measure installer compression on the same payload
+        shell: pwsh
+        run: ./app/tools/measure-installer.ps1
       - name: Verify portable package and independent updater
         shell: pwsh
         run: |
