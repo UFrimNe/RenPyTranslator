@@ -187,7 +187,7 @@ def run():
     fallback.goto(f'http://127.0.0.1:{server.server_port}/#{app.token}')
     fallback.locator('[data-action="add-game"]').click();fallback.locator('#game-path').fill(str(game.parent))
     fallback.locator('[data-action="browse-game"]').click()
-    expect(fallback.locator('#modal-error')).to_contain_text('доступен в Windows')
+    expect(fallback.locator('#modal-error')).to_contain_text('Компонент выбора папки не найден' if os.name=='nt' else 'доступен в Windows')
     expect(fallback.locator('#game-path')).to_have_value(str(game.parent))
     expect(fallback.locator('[data-action="browse-game"]')).to_be_enabled()
     expect(fallback.locator('.directory-list')).to_have_count(0)
