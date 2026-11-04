@@ -1,0 +1,37 @@
+name: Retire temporary dev branch
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/retire-dev.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  retire:
+    if: github.repository == 'UFrimNe/RenPyTranslator' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete only the approved dev ref already included in main
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $ApprovedDev = '8d1918224e5f3228be00b3a641c5f7c94d89016a'
+          $Refs = (gh api "repos/$env:GH_REPO/git/matching-refs/heads/dev") | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot inspect dev ref' }
+          $DevRef = $Refs | Where-Object { $_.ref -eq 'refs/heads/dev' }
+          if (-not $DevRef) { Write-Host 'Dev is already absent'; exit 0 }
+          if ($DevRef.object.sha -ne $ApprovedDev) { throw 'Dev changed since approval; preserving it for review' }
+          $Relation = (gh api "repos/$env:GH_REPO/compare/$ApprovedDev...$env:GITHUB_SHA") | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0 -or $Relation.status -notin @('ahead','identical')) { throw 'Dev is not fully included in main' }
+          gh api "repos/$env:GH_REPO/git/refs/heads/dev" --method DELETE
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot delete dev branch' }
+          $Remaining = (gh api "repos/$env:GH_REPO/git/matching-refs/heads/dev") | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot verify branch deletion' }
+          if ($Remaining | Where-Object { $_.ref -eq 'refs/heads/dev' }) { throw 'Dev still exists' }
+          Write-Host 'Dev deleted; all source history is retained in main and v11.28'

@@ -2,7 +2,9 @@
 
 ![RenPyTranslator — твои истории на русском](docs/assets/banner.svg)
 
-**Локальный перевод Ren’Py-игр с понятным меню и диагностикой.**
+# RenPyTranslator — переводчик игр Ren’Py
+
+**Перевод визуальных новелл на русский язык с локальным ИИ.**
 
 [![Windows build](https://github.com/UFrimNe/RenPyTranslator/actions/workflows/release.yml/badge.svg?branch=main)](https://github.com/UFrimNe/RenPyTranslator/actions/workflows/release.yml)
 [![Release](https://img.shields.io/github/v/release/UFrimNe/RenPyTranslator?color=b8a0ff&label=версия)](https://github.com/UFrimNe/RenPyTranslator/releases/latest)
@@ -71,7 +73,7 @@ Build.bat
 <details>
 <summary><strong>Разработчикам: код, проверки и выпуск</strong></summary>
 
-- `main` — публичная версия; `dev` — разработка.
+- `main` — рабочая и публичная ветка.
 - `app/src/rpts` — извлечение, перевод, проверки и базы.
 - `app/tools` — CLI, сервер, сборка и упаковка.
 - `app/web` — интерфейс CEF; `app/desktop` — C#-контейнер.
@@ -84,7 +86,7 @@ python app/tools/check_source.py
 Windows CI проверяет исходники и интерфейс, собирает все файлы и проверяет установку/удаление.
 Публикация выполняется из `main` с тегом `v<версия>`. Готовый релиз повторно не перезаписывается.
 Для нового релиза меняются `app/VERSION.txt` и заметки в `docs/releases`.
-`dev` проходит ту же сборку и сохраняет результат в Actions без создания технических тегов.
+Сейчас используется только `main`; дополнительная ветка разработки временно убрана.
 
 [Разработка](docs/DEVELOPMENT.md) · [Устройство обновлений](docs/UPDATES.md) · [Изменения 11.28](docs/CHANGELOG_11_28.md)
 

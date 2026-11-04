@@ -2,7 +2,7 @@ name: Windows build and release
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main]
   workflow_dispatch:
 
 concurrency:
@@ -64,16 +64,6 @@ jobs:
       - name: Install and uninstall smoke check with user data preservation
         shell: pwsh
         run: ./app/tools/test-installer.ps1
-      - uses: actions/upload-artifact@v4
-        if: github.ref == 'refs/heads/dev'
-        continue-on-error: true
-        with:
-          name: RenPyTranslator-Windows
-          path: |
-            dist/*_win64.zip
-            dist/*_source.zip
-          compression-level: 0
-          retention-days: 1
       - name: Publish versioned release and retire legacy tags
         if: github.ref == 'refs/heads/main'
         shell: pwsh
