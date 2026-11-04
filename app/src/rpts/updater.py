@@ -210,9 +210,12 @@ class Updater:
             package.log(self.root, 'handoff', build_id=release['build_id'])
             close_host(os.getppid())
         except Exception as exc:
-            if helper:
-                (helper/'cancel').touch()
             self.set(status='available', message='Не удалось установить обновление: '+str(exc), progress=None)
+            if helper:
+                try:
+                    (helper/'cancel').touch()
+                except OSError:
+                    pass  # A full temporary drive must not leave the UI permanently busy.
             package.log(self.root, 'prepare_failed', error=str(exc))
         finally:
             reservation.__exit__(None, None, None)

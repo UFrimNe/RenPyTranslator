@@ -14,8 +14,13 @@ $PythonTag = (& python -c 'import sys; print(str(sys.version_info.major)+str(sys
 Set-Content $Pth.FullName "python$PythonTag.zip`n.`nLib`nLib/site-packages`nimport site" -Encoding ascii
 
 Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile "$env:RUNNER_TEMP/rpts-dotnet-install.ps1"
+# The Windows Desktop ZIP contains the shared GUI framework, but not dotnet.exe/hostfxr.
+& "$env:RUNNER_TEMP/rpts-dotnet-install.ps1" -Channel 8.0 -Runtime dotnet -Architecture x64 -InstallDir "$Runtime/dotnet" -NoPath
+if ($LASTEXITCODE -ne 0) { throw 'Portable .NET host installation failed' }
 & "$env:RUNNER_TEMP/rpts-dotnet-install.ps1" -Channel 8.0 -Runtime windowsdesktop -Architecture x64 -InstallDir "$Runtime/dotnet" -NoPath
 if ($LASTEXITCODE -ne 0) { throw 'Portable .NET installation failed' }
+& "$Runtime/dotnet/dotnet.exe" --list-runtimes
+if ($LASTEXITCODE -ne 0) { throw 'Portable .NET self check failed' }
 Invoke-WebRequest 'https://aka.ms/vs/17/release/vc_redist.x64.exe' -OutFile "$Runtime/installers/VC_redist.x64.exe"
 & "$Runtime/python/python.exe" -c 'import sqlite3, ssl, ctypes, zipfile; print("Portable Python OK")'
 if ($LASTEXITCODE -ne 0) { throw 'Portable Python self check failed' }

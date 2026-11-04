@@ -11,7 +11,7 @@ import unittest
 import urllib.error
 import zipfile
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from rpts import update_package as pkg
 from rpts import updater
@@ -159,6 +159,20 @@ class UpdateTests(unittest.TestCase):
         result = subprocess.run([sys.executable, '-I', str(helper/'apply_update.py'), '--self-check'],
                                 capture_output=True, text=True, encoding='utf-8', timeout=10)
         self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_full_temporary_drive_releases_reservation_and_does_not_leave_ui_busy(self):
+        release = self.pack()
+        manager = updater.Updater(self.root)
+        manager.set(status='downloading')
+        helper = Path(self.temp.name)/'full-drive-helper'; helper.mkdir()
+        reservation = MagicMock()
+        with patch.object(updater, 'download'), patch.object(updater.tempfile, 'mkdtemp', return_value=str(helper)), \
+             patch.object(updater.shutil, 'copytree', side_effect=OSError('disk full')), \
+             patch.object(Path, 'touch', side_effect=OSError('disk full')):
+            manager._install(release, reservation)
+        self.assertEqual('available', manager.snapshot()['status'])
+        self.assertIn('disk full', manager.snapshot()['message'])
+        reservation.__exit__.assert_called_once()
 
     @unittest.skipUnless(os.name == 'nt', 'Actual Windows file sharing')
     def test_actual_windows_file_lock_causes_complete_rollback(self):
