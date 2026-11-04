@@ -60,7 +60,7 @@ def run_desktop(root,diagnostic=False):
     status=preflight(root)
     (logs/'startup_inventory.json').write_text(json.dumps(status,ensure_ascii=False,indent=2),encoding='utf-8')
     env=os.environ.copy();runtime=str(root/'runtime/dotnet')
-    env.update(DOTNET_ROOT=runtime,DOTNET_ROOT_X64=runtime,DOTNET_MULTILEVEL_LOOKUP='0')
+    env.update(DOTNET_ROOT=runtime,DOTNET_ROOT_X64=runtime,DOTNET_MULTILEVEL_LOOKUP='0',RPTS_BOOTSTRAP_PID=str(os.getpid()))
     if diagnostic:env.update(COREHOST_TRACE='1',COREHOST_TRACE_VERBOSITY='3')
     executable=root/'app/desktop/bin/RPTS.Desktop.exe';started=time.monotonic();process_log=logs/'desktop-process.log'
     # Capture even hostfxr/CLR failures that happen before the C# Main catch block.
@@ -81,7 +81,7 @@ def startup_report(root):
     temp=out.with_suffix('.zip.tmp')
     with zipfile.ZipFile(temp,'w',compression=zipfile.ZIP_DEFLATED) as z:
         z.writestr('startup_inventory.json',json.dumps(installation_status(root),ensure_ascii=False,indent=2))
-        for name in ['launcher.log','desktop-process.log','desktop-host.log','desktop-backend.log','cef.log','native-folder.log']:
+        for name in ['launcher.log','desktop-process.log','desktop-host.log','desktop-backend.log','cef.log','native-folder.log','updater.log']:
             path=root/'data/logs'/name
             if path.is_file():
                 with path.open('rb') as f:
@@ -104,8 +104,14 @@ def main(argv=None):
         if os.name!='nt':raise RuntimeError('Эта сборка предназначена для Windows 10/11 x64.')
         record(ROOT,'launcher_start')
         if diagnostic:announce('RPTS: проверяю файлы и запускаю графическое окно. Журналы: data/logs')
-        ensure_vcruntime(ROOT)
-        code=run_desktop(ROOT,diagnostic)
+        # Load recovery without importing the rest of the application during a partial update.
+        import importlib.util
+        spec=importlib.util.spec_from_file_location('rpts_update_recovery',ROOT/'app/src/rpts/update_package.py')
+        recovery=importlib.util.module_from_spec(spec);spec.loader.exec_module(recovery)
+        with recovery.FileLock(ROOT/'data/update.lock'):
+            recovery.recover(ROOT)
+            ensure_vcruntime(ROOT)
+            code=run_desktop(ROOT,diagnostic)
     except Exception as ex:
         code=1
         try:record(ROOT,'launch_failed',error=str(ex),traceback=traceback.format_exc())

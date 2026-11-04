@@ -7,7 +7,8 @@ let gameTab='overview',libraryTab='games',modelTab='catalog',settingsTab='folder
 let rowsData={rows:[],total:0},rowsLoading=false,rowsRequest=0,rowsProject='',rowDrafts={};
 let token=location.hash.slice(1)||sessionStorage.getItem('rpts_token')||'';sessionStorage.setItem('rpts_token',token);history.replaceState(null,'',location.pathname);
 let state=null,view='games',selected='',lastSignature='',modalType='',dismissedJob='',lastPrompt='',filter='',rowOffset=0,rowQuery='',rowStatus='',connectionFails=0;
-const busy=()=>state?.job&&['running','waiting_input','stopping'].includes(state.job.status);
+const updateBusy=()=>['downloading','preparing','restarting'].includes(state?.update?.status);
+const busy=()=>updateBusy()||Boolean(state?.job&&['running','waiting_input','stopping'].includes(state.job.status));
 const chosen=()=>state?.projects.find(x=>x.id===selected), model=()=>state?.models.find(x=>x.key===state.selected_model);
 const fmt=n=>Number(n||0).toLocaleString('ru-RU');
 function date(v){if(!v)return 'Дата не записана';const d=new Date(typeof v==='number'?v*1000:v);return isNaN(d)?String(v):d.toLocaleString('ru-RU',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}
@@ -20,7 +21,7 @@ function header(title,subtitle,action=''){return `<div class="page-head"><div><d
 function statusGame(g){if(!g.available)return ['orange','Папка недоступна'];if(!g.audited)return ['muted','Готова к анализу'];if(g.errors)return ['orange',`Ошибки: ${g.errors}`];if(g.total&&g.ready===g.total)return ['','Переведено'];if(g.ready)return ['purple','Перевод начат'];return ['muted','Ожидает перевода'];}
 function badge(g){const [cls,text]=statusGame(g);return `<span class="status-label ${cls}">${e(text)}</span>`;}
 function renderJob(){const j=state.job;if(!j||dismissedJob===j.id&&!busy()){$('#job-panel').innerHTML='';return;}const active=busy();$('#job-panel').innerHTML=`<section class="job-box ${!active&&j.status==='completed'?'completed':''}"><div class="job-main"><strong>${active?'<span class="spinner"></span>':icon(j.status==='completed'?'check':'info')}${e(active?j.phase:j.message)}</strong><p>${e(j.status==='stopping'?j.message:active?(j.total?`${fmt(j.done)} / ${fmt(j.total)} строк · ошибок ${j.errors} · осталось ~${j.eta||'…'}`:j.detail||'Подготавливаем данные. Время зависит от модели и компьютера.'):j.result?.warning?'Есть строки с ошибками. Их можно перевести повторно.':'Результат и подробности сохранены.')}</p>${active?(j.progress===null?'<div class="progress indeterminate"><span></span></div>':progress(j.progress)):''}</div><div class="job-actions">${j.status==='waiting_input'?b('Нужен ответ','prompt','primary'):''}${b('Журнал','journal','ghost')}${active?b(icon('stop')+' Остановить','cancel','',j.status==='stopping'?'disabled':''):`<button class="icon-button" data-action="dismiss-job" aria-label="Скрыть уведомление">${icon('close')}</button>`}</div></section>`;if(modalType==='journal'&&$('#job-log')){const log=$('#job-log'),atBottom=log.scrollHeight-log.scrollTop-log.clientHeight<50;log.textContent=(j.logs||[]).join('\n');if(atBottom)log.scrollTop=log.scrollHeight;}if(j.status==='waiting_input'&&lastPrompt!==j.id+j.input){lastPrompt=j.id+j.input;showPrompt();}}
-async function refresh(force=false){try{const next=await api('/api/state');connectionFails=0;$('#connection').hidden=true;state=next;if(!state.projects.some(x=>x.id===selected))selected=state.projects.some(x=>x.id===state.preferences.active_project)?state.preferences.active_project:state.projects[0]?.id||'';const sig=JSON.stringify([state.projects,state.translations,state.models,state.selected_model,state.backend,state.mode,state.hardware,state.history,state.job,state.report_available]);if(force||sig!==lastSignature){if(!$('#main').contains(document.activeElement)||!document.activeElement.matches('input,textarea,select,[role=combobox]')||force){lastSignature=sig;render();}}renderJob();}catch(err){if(++connectionFails>2){$('#connection').hidden=false;$('#connection').textContent='Не удалось подключиться к RPTS: '+err.message;}}}
+async function refresh(force=false){try{const next=await api('/api/state');connectionFails=0;$('#connection').hidden=true;state=next;if(!state.projects.some(x=>x.id===selected))selected=state.projects.some(x=>x.id===state.preferences.active_project)?state.preferences.active_project:state.projects[0]?.id||'';const sig=JSON.stringify([state.projects,state.translations,state.models,state.selected_model,state.backend,state.mode,state.hardware,state.history,state.job,state.report_available,state.update]);if(force||sig!==lastSignature){if(!$('#main').contains(document.activeElement)||!document.activeElement.matches('input,textarea,select,[role=combobox]')||force){lastSignature=sig;render();}}renderJob();renderUpdateNotice();}catch(err){if(++connectionFails>2){$('#connection').hidden=false;$('#connection').textContent='Не удалось подключиться к RPTS: '+err.message;}}}
 async function start(action,params={},identity=selected){await api('/api/job',{action,project_id:identity,params});closeModal();dismissedJob='';await refresh(true);}
 function addGame(){modal('Добавить игру',`<p class="muted small" style="margin-bottom:18px">Выбери папку игры или вставь путь к её EXE. Поддерживаются игры на Ren’Py, включая архивы .rpa.</p><div class="field"><label for="game-path">Путь к игре</label><div class="inline-field"><input id="game-path" placeholder="F:\\Games\\Emberbound" autocomplete="off">${b(icon('folder'),'browse-game','','aria-label="Выбрать папку"')}</div></div>`,b('Отмена','close-modal','ghost')+b('Добавить игру','confirm-add','primary'),'add');}
 async function pickFolder(field,kind,button) {
@@ -48,6 +49,12 @@ async function showRows(){
  }finally{if(request===rowsRequest){rowsLoading=false;if(view==='game'&&gameTab==='text'&&selected===identity)render();}}
 }
 async function act(action,el){
+ if(action==='show-updates'){view='settings';settingsTab='updates';render();return;}
+ if(action==='update-check'){await api('/api/update/check',{});await refresh(true);return;}
+ if(action==='update-install'){
+  if(Object.keys(rowDrafts).length||translationDraft)throw Error('Сохрани ручные правки и параметры перевода перед перезапуском.');
+  await api('/api/update/install',{});await refresh(true);return;
+ }
  if(action==='close-modal'){closeModal();return;}
  if(action==='add-game'){addGame();return;}
  if(action==='browse-game'){await pickFolder($('#game-path'),'game',el);return;}
@@ -83,3 +90,10 @@ document.addEventListener('click',async ev=>{if(ev.target.closest('[data-tab],[d
 document.addEventListener('input',ev=>{if(ev.target.id==='game-search'){filter=ev.target.value;$('#game-grid').innerHTML=gameGrid();}});
 $('#modal').addEventListener('close',()=>{modalType='';});
 (async()=>{await refresh(true);setInterval(()=>refresh(),1800);})();
+
+function renderUpdateNotice(){
+ const notice=$('#update-notice');if(!notice)return;
+ const u=state?.update;notice.hidden=!u||!['available','downloading','preparing','restarting'].includes(u.status);
+ notice.innerHTML=icon('refresh')+' '+(updateBusy()?'Обновление…':'Доступно обновление');
+ if(u?.status==='restarting'){$('#connection').hidden=false;$('#connection').textContent='RPTS обновляется. Окно закроется и откроется снова.';}
+}

@@ -1,8 +1,8 @@
 [project]
 name = "renpy-translator"
-version = "0.11.26"
+version = "0.11.27"
 description = "End-to-end Ren'Py translation toolkit with local AI, free Google translation, compiled-script extraction, SQLite projects, patch generation and install."
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = []
 
 [project.scripts]

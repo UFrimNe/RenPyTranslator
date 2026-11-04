@@ -96,11 +96,11 @@ function models() {
 }
 function settingsPage() {
  const head=header('Настройки лаунчера','Хранение файлов и обслуживание приложения.');
- const navigation=tabs([['folders','Папки и данные'],['advanced','Дополнительно'],['updates','Обновления · позже']],settingsTab,'settings');
+ const navigation=tabs([['folders','Папки и данные'],['advanced','Дополнительно'],['updates','Обновления']],settingsTab,'settings');
  let body='';
  if(settingsTab==='folders')body=`<section class="panel"><h2>Файлы на компьютере</h2><p>Игры остаются в своих папках. Проекты, переводы и модели хранятся отдельно.</p>${Object.entries({projects:'Проекты и рабочие базы',translations:'Готовые переводы',models:'Модели и llama.cpp',reports:'Диагностические ZIP'}).map(([k,v])=>`<div class="folder-row"><span class="folder-symbol">${icon('folder')}</span><div><strong>${v}</strong><div class="path">${e(state.paths[k])}</div></div>${b('Открыть','open','ghost',`data-target="${k}"`)}</div>`).join('')}</section>${state.warnings.map(x=>`<div class="notice warning">${e(x)}</div>`).join('')}`;
  if(settingsTab==='advanced')body=`<section class="panel"><h2>Прежнее консольное меню</h2><p>Все расширенные функции сохранены: внешние провайдеры, ручные профили, импорт, обслуживание и восстановление. Одновременно выполнять операции в двух окнах нельзя.</p>${b(icon('code')+' Открыть консоль','open','','data-target="console"')}<div class="separator"></div><h2>Дополнительные компоненты</h2><p>Декомпилятор нужен для некоторых игр с закрытыми скриптами. Обычный запуск переводчика сам подскажет, если его не хватает.</p>${b(icon('download')+' Установить / обновить unrpyc','unrpyc','',busy()?'disabled':'')}<div class="separator"></div>${routeButton('Параметры перевода','model','parameters','settings')}</section>`;
- if(settingsTab==='updates')body=`<section class="empty updates-placeholder"><span class="model-glyph">${icon('refresh')}</span><h2>Обновления появятся позже</h2><p>GitHub пока не подключён. В этой версии лаунчер не проверяет, не скачивает и не устанавливает обновления.</p><span class="status-label muted">Сейчас — ручное обновление из архива</span></section>`;
+ if(settingsTab==='updates')body=updatesPanel();
  return head+navigation+body;
 }
 function jobName(action) {return ({audit:'Анализ игры',translate:'Перевод игры',translate_ui:'Перевод интерфейса',install_model:'Загрузка модели',build:'Сборка перевода',install:'Установка патча',report:'Диагностический ZIP',profiles:'Профили персонажей',launch:'Запуск игры',restore:'Восстановление базы',retranslate:'Повторный перевод'})[action]||action;}
@@ -176,3 +176,17 @@ document.addEventListener('keydown',event=>{
  if(event.key==='Enter'&&event.target.id==='action-query')$('#action-results button')?.click();
  if(event.key==='Enter'&&event.target.id==='row-query')$('#main [data-action="find-rows"]')?.click();
 });
+
+function updatesPanel(){
+ const u=state.update||{status:'idle'},r=u.release;
+ const active=['checking','downloading','preparing','restarting'].includes(u.status);
+ return `<section class="panel"><div class="section-bar"><div><span class="status-label purple">GitHub · dev · тестовые сборки</span><h2>Обновления программы</h2><p>Текущая версия: ${e(state.version)}. Проверка выполняется при запуске.</p></div><span class="model-glyph">${icon('refresh')}</span></div>
+ <p role="status">${e(u.message||'Проверка ещё не выполнялась.')}</p>
+ ${active?(u.progress===null||u.progress===undefined?'<div class="progress indeterminate"><span></span></div>':progress(u.progress)):''}
+ ${r?`<p class="muted">Сборка ${e(r.version)} · ${e(r.build_id?.slice(0,8))} · ${fmt(Math.ceil(r.bytes/1024/1024))} МБ</p>${r.notes?`<p style="white-space:pre-wrap">${e(r.notes)}</p>`:''}`:''}
+ <div class="button-row">${u.status==='available'?b(icon('download')+' Скачать и перезапустить','update-install','primary',busy()?'disabled':''):''}${b('Проверить обновления','update-check',u.status==='available'?'ghost':'',active?'disabled':'')}</div>
+ ${busy()&&!updateBusy()?'<p class="muted">Сначала заверши текущую задачу, затем установи обновление.</p>':''}
+ <div class="notice">Обновляются только файлы программы и среды запуска. Модели, игры, проекты, переводы и настройки сохраняются. Во время установки окно закроется и откроется снова.</div>
+ ${u.last_result?.status==='failed'?`<div class="notice warning">Последняя установка не завершилась: ${e(u.last_result.message)}. Подробности есть в диагностическом ZIP.</div>`:''}
+ <p class="muted small">Интернет нужен только для проверки и загрузки. Без него можно продолжать перевод. Ветка dev содержит сборки в разработке.</p></section>`;
+}

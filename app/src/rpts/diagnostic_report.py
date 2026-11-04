@@ -101,6 +101,9 @@ def build_report(*, root, app, reports, work, database, quality, server_log, con
             tree(app / 'desktop' / 'src', 'diagnostics/cef_host', {'.cs', '.csproj', '.manifest'})
             tree(app / 'desktop' / 'picker', 'diagnostics/native_picker', {'.cs', '.csproj'})
             add(app / 'VERSION.txt', 'diagnostics/VERSION.txt')
+            add(app / 'release_manifest.json', 'diagnostics/release_manifest.json')
+            add(data / 'updates' / 'result.json', 'diagnostics/update_result.json')
+            add(data / 'updates' / 'rollback' / 'journal.json', 'diagnostics/update_journal.json')
             tree(work / 'ui', 'work/ui', {'.json', '.jsonl', '.csv', '.tsv', '.txt'})
             tree(work / 'patch', 'work/patch', {'.json', '.rpy', '.py', '.txt'})
             for path in sorted(server_log.parent.glob(server_log.name + '*')):

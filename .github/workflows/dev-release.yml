@@ -1,0 +1,82 @@
+name: Build and publish dev
+
+on:
+  push:
+    branches: [dev]
+  workflow_dispatch:
+
+concurrency:
+  group: dev-release
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  portable:
+    if: github.ref == 'refs/heads/dev'
+    runs-on: windows-2022
+    timeout-minutes: 40
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Source regression tests
+        run: python app/tools/check_source.py
+      - name: Build CEF and folder picker
+        shell: pwsh
+        run: ./app/desktop/build.ps1
+      - name: Prepare portable runtimes
+        shell: pwsh
+        run: ./app/desktop/prepare-runtime.ps1
+      - name: Package complete program
+        run: python app/tools/package_release.py --build-id ${{ github.sha }} --build-number ${{ github.run_id }}
+      - name: Validate packaged inventory
+        shell: pwsh
+        run: |
+          $env:PYTHONPATH = 'app/src'
+          python -c "import glob,json; from rpts.update_package import inspect_package; inspect_package(glob.glob('dist/*.zip')[0],json.load(open('dist/dev-update.json'))); print('Package verified')"
+      - name: Save complete program artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: RPTS-dev-win64
+          path: dist/*
+          compression-level: 0
+          retention-days: 14
+      - name: Publish dev channel after all checks pass
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BUILD_SHA: ${{ github.sha }}
+          BUILD_NUMBER: ${{ github.run_id }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          # A slow older run must never move the channel behind a newer dev commit.
+          $Current = gh api "repos/$env:GH_REPO/git/ref/heads/dev" --jq '.object.sha'
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot read dev head' }
+          if ($Current -ne $env:BUILD_SHA) { Write-Host 'Newer dev commit exists; keeping artifact without publishing'; exit 0 }
+          $Release = "dev-$env:BUILD_NUMBER"
+          gh release view $Release 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $Release --target $env:BUILD_SHA --prerelease --latest=false --title "RPTS dev $env:BUILD_NUMBER" --notes "Complete portable Windows x64 program from dev, commit $env:BUILD_SHA. Models and games are downloaded separately."
+            if ($LASTEXITCODE -ne 0) { throw 'Cannot create build release' }
+          }
+          $Archive = (Get-ChildItem dist/*.zip | Select-Object -First 1).FullName
+          gh release upload $Release $Archive --clobber
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot upload complete program' }
+          gh release view dev-latest 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create dev-latest --target $env:BUILD_SHA --prerelease --latest=false --title 'RPTS dev channel' --notes 'The update descriptor points to the latest verified full portable build.'
+            if ($LASTEXITCODE -ne 0) { throw 'Cannot create dev channel' }
+          }
+          gh release upload dev-latest dist/dev-update.json --clobber
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot publish update descriptor' }
+          gh api "repos/$env:GH_REPO/git/refs/tags/dev-latest" --method PATCH -f sha=$env:BUILD_SHA -F force=true
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot move dev channel tag' }

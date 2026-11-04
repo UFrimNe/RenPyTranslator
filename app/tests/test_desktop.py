@@ -190,14 +190,17 @@ class ApiTests(unittest.TestCase):
         try:
             with urllib.request.urlopen(req) as r:return r.status,json.load(r)
         except urllib.error.HTTPError as e:return e.code,json.load(e)
-    def test_launcher_serves_new_views_and_has_no_update_service(self):
+    def test_launcher_serves_views_and_authenticates_update_service(self):
         with urllib.request.urlopen(self.url+'/views.js') as response:
             self.assertEqual(200,response.status)
             self.assertIn('script-src',response.headers['Content-Security-Policy'])
-        self.assertFalse(hasattr(self.app,'updates'))
+        self.assertTrue(hasattr(self.app,'updater'))
         headers={'Authorization':'Bearer '+self.app.token}
         self.assertEqual(404,self.call('/api/update/handoff',headers)[0])
-        self.assertEqual(400,self.call('/api/update/check',headers,{})[0])
+        self.assertEqual(403,self.call('/api/update/check',{}, {})[0])
+        with patch.object(self.app.updater,'check',return_value={'status':'checking'}) as check:
+            self.assertEqual(200,self.call('/api/update/check',headers,{})[0])
+            check.assert_called_once()
     def test_native_picker_and_icon_scripts_are_local_static_assets(self):
         for path in ['/native-picker.js','/icons.js','/selects.js']:
             with urllib.request.urlopen(self.url+path) as response:

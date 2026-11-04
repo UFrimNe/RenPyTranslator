@@ -33,6 +33,8 @@ class Desktop:
         self.token=secrets.token_urlsafe(32);diagnostics.remember_secrets([self.token])
         self.picker_lock=threading.Lock()
         self.lock=threading.RLock();self.job=None;self.process=None;self.server=None
+        from .updater import Updater
+        self.updater=Updater(self.ws.root)
         self.hardware=None;self.hardware_error=''
         self.history=[]
         for path in sorted(self.ws.jobs.glob('*/job.json'),reverse=True)[:20]:
@@ -68,7 +70,8 @@ class Desktop:
             hw={'loading':self.hardware is None and not self.hardware_error,'error':self.hardware_error}
             if self.hardware:
                 hw.update(ram=human_bytes(self.hardware.ram_bytes),gpus=[{'name':g.name,'memory':human_bytes(g.vram_bytes)} for g in self.hardware.gpus],backend=recommended_backend(self.hardware))
-            return {'version':'11.26','projects':self.ws.projects_list(),'translations':self.ws.translations(),'models':models,
+            return {'version':(self.app/'VERSION.txt').read_text(encoding='utf-8').strip() if (self.app/'VERSION.txt').exists() else 'dev',
+                'update':self.updater.snapshot(),'projects':self.ws.projects_list(),'translations':self.ws.translations(),'models':models,
                 'selected_model':selected or recommended,'configured_model':selected,'backend':settings.get('backend') or hw.get('backend','cpu'),
                 'preferences':preferences,'mode':mode,'job':self.job,'history':self.history[:10],'hardware':hw,
                 'notes':config.get('notes',''),'glossary':config.get('glossary',{}),
@@ -81,6 +84,7 @@ class Desktop:
         if action not in ACTIONS:raise ValueError('Неизвестная операция.')
         if action not in {'report','unrpyc','install_model'}:self.ws.project(identity)
         with self.lock:
+            if self.updater.active():raise ValueError('Дождись установки обновления и перезапуска RPTS.')
             if self.busy():raise ValueError('Дождись текущей операции или останови её.')
             stamp=datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')+'-'+secrets.token_hex(4)
             folder=self.ws.jobs/stamp;folder.mkdir()
@@ -149,6 +153,11 @@ class Desktop:
             self.job.update(status='running',input=None);self._save_job()
             return {'ok':True}
     def mutate(self,route,data):
+        if route=='/api/update/check':return self.updater.check()
+        if route=='/api/update/install':
+            with self.lock:
+                if self.busy():raise ValueError('Сначала заверши текущую операцию. Перевод и готовые строки сохранятся.')
+                return self.updater.begin()
         if route=='/api/pick-folder':
             if not self.picker_lock.acquire(blocking=False):raise ValueError('Окно выбора папки уже открыто.')
             try:
@@ -162,6 +171,7 @@ class Desktop:
             if self.busy():self.cancel();return {'busy':True}
             threading.Thread(target=self.server.shutdown,daemon=True).start();return {'busy':False}
         with self.lock:
+            if self.updater.active():raise ValueError('Идёт обновление RPTS. Дождись перезапуска.')
             if self.busy() and route not in {'/api/open'}:raise ValueError('Сначала дождись завершения текущей операции.')
             if route=='/api/open':return self._mutate_idle(route,data)
             with OperationLock(self.ws.data/'operation.lock'):
@@ -304,6 +314,7 @@ def serve(root,port=0):
     with OperationLock(app.ws.data/'desktop.lock'):
         server=ThreadingHTTPServer(('127.0.0.1',port),Handler);server.daemon_threads=True;server.app=app;app.server=server
         print(f'RPTS_URL http://127.0.0.1:{server.server_port}/#{app.token}',flush=True)
+        app.updater.check()
         try:server.serve_forever(poll_interval=.3)
         finally:server.server_close()
 
