@@ -136,4 +136,29 @@ Windows CI проверяет исходники и интерфейс, соби
 В меню **Помощь и диагностика** собери ZIP и приложи его к [issue](https://github.com/UFrimNe/RenPyTranslator/issues).
 Если окно не открывается — запусти `RPTS-Debug.bat`. В отчёте может быть текст игры и перевода; API-ключи скрываются.
 
+## Благодарности
+
+В RPTS используются сторонние проекты, модели и инструменты. Спасибо их авторам и сообществам за работу, на которую опирается программа.
+
+| Проект | Авторы и команды | Роль в RPTS |
+| --- | --- | --- |
+| [llama.cpp](https://github.com/ggml-org/llama.cpp) / [ggml](https://github.com/ggml-org/ggml) | Georgi Gerganov, ggml-org и участники проектов | Локальный запуск GGUF-моделей и сервер перевода. |
+| [unrpyc](https://github.com/CensoredUsername/unrpyc) | Yuri K. Schlesner, CensoredUsername, Jackmcbarn и участники проекта | Чтение и декомпиляция скомпилированных скриптов Ren’Py `.rpyc`. |
+| [Ren’Py](https://github.com/renpy/renpy) | Tom Rothamel и сообщество Ren’Py | Движок, форматы скриптов, система локализации и документация, с которыми работает переводчик. |
+| [CEF](https://github.com/chromiumembedded/cef) / [Chromium](https://www.chromium.org/) | Команды Chromium Embedded Framework и Chromium | Браузерный движок графического интерфейса. |
+| [CefSharp](https://github.com/cefsharp/CefSharp) | Авторы и участники CefSharp | Интеграция CEF с оконным контейнером на C#. |
+| [SQLite](https://www.sqlite.org/) | Richard Hipp и команда SQLite | Базы проектов, строки перевода и история обработки. |
+| [Qwen](https://huggingface.co/Qwen) | Qwen Team | Поддерживаемые модели Qwen3 и Qwen3.5. |
+| [Hy-MT2](https://huggingface.co/tencent/Hy-MT2-7B-GGUF) | Tencent Hunyuan | Специализированные модели перевода. |
+| [TranslateGemma](https://huggingface.co/google/translategemma-12b-it) | Google | Переводческая модель, доступная в экспериментальном режиме. |
+| [DeepSeek-R1](https://github.com/deepseek-ai/DeepSeek-R1) | DeepSeek-AI | Экспериментальная модель DeepSeek-R1-Distill-Qwen. |
+| GGUF-сборки моделей | [Unsloth](https://huggingface.co/unsloth), [ggml-org](https://huggingface.co/ggml-org), [NikolayKozloff](https://huggingface.co/NikolayKozloff/translategemma-12b-it-Q4_K_M-GGUF), а также команды Qwen и Tencent | Подготовка и публикация GGUF-файлов, используемых каталогом моделей RPTS. |
+| [Hugging Face](https://huggingface.co/) | Команда Hugging Face и авторы репозиториев моделей | Размещение моделей и их карточек, загрузка файлов. |
+| [Python / CPython](https://www.python.org/) | Python Software Foundation и сообщество Python | Ядро переводчика, извлечение текста и диагностика. |
+| [.NET](https://dotnet.microsoft.com/) / [Visual C++](https://visualstudio.microsoft.com/vs/features/cplusplus/) | Microsoft и участники .NET | Оконный контейнер, стандартный выбор папки и сборка Windows-компонентов. |
+| [Inno Setup](https://jrsoftware.org/isinfo.php) | Jordan Russell и Martijn Laan | Сборка полного установщика EXE. |
+| [Flaticon Uicons](https://www.flaticon.com/uicons) | Flaticon | Иконки интерфейса. |
+
+Движок llama.cpp, модели и unrpyc загружаются отдельно при необходимости. Сведения о сторонних компонентах и их лицензиях собраны в [THIRD_PARTY.md](app/THIRD_PARTY.md).
+
 Атрибуция иконок: [Flaticon Uicons](app/FLATICON-LICENSE.txt). Сторонние компоненты: [THIRD_PARTY.md](app/THIRD_PARTY.md).
