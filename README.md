@@ -23,6 +23,8 @@
 | [**Portable ZIP**](https://github.com/UFrimNe/RenPyTranslator/releases/latest/download/RenPyTranslator_11_29_win64.zip) | Распаковать в удобную папку и открыть **RPTS.exe**. Установка не требуется. |
 | [**Исходники ZIP**](https://github.com/UFrimNe/RenPyTranslator/releases/latest/download/RenPyTranslator_11_29_source.zip) | Изучить код, изменить программу или собрать свою копию через **Build.bat**. |
 
+Установщик 11.29 занимает **215,1 МБ** вместо 263,7 МБ в 11.28 — на **18,4% меньше**. Все комплектные среды и функции сохранены. [Отчёт о размере](https://github.com/UFrimNe/RenPyTranslator/releases/download/v11.29/installer-size-report.json).
+
 1. Открой программу через ярлык или `RPTS.exe`.
 2. Добавь папку игры и выбери локальную модель. При первом запуске загрузятся модель и движок.
 3. Начни перевод. Готовую часть можно установить и запустить игру, затем продолжить перевод позже.
@@ -34,36 +36,36 @@
 
 ## Проверка на вирусы
 
-Для файлов **релиза v11.28** добавлены ссылки на поиск отчётов VirusTotal по SHA-256:
+Для файлов **релиза v11.29** добавлены ссылки на поиск отчётов VirusTotal по SHA-256:
 
 | Файл | VirusTotal |
 | --- | --- |
-| Установщик EXE | [Найти отчёт](https://www.virustotal.com/gui/file/8786d57989d6550cb67c354c2ea479c4b38d3960613af864335e719b1ed31727) |
-| Portable ZIP | [Найти отчёт](https://www.virustotal.com/gui/file/23a52e483f4e42076a7b245c76a6eb733c972b1c15ead603d2ff270b9a2ab869) |
+| Установщик EXE | [Найти отчёт](https://www.virustotal.com/gui/file/84e7186459d658b7606c745a30c9718c7abb32d586115c277cb714523a21db5a) |
+| Portable ZIP | [Найти отчёт](https://www.virustotal.com/gui/file/b2dcfff8a666038aff955230a73f5198695ca2fdcbe77157109b027d8da5f9ef) |
 
 Если отчёт не найден, [открой VirusTotal](https://www.virustotal.com/gui/home/upload) и выбери скачанный EXE или ZIP для анализа. Отчёт относится к конкретному файлу с указанным хешем.
 
 <details>
 <summary><strong>Сверить контрольные суммы</strong></summary>
 
-**RenPyTranslator_11.28_Setup_win64.exe**
+**RenPyTranslator_11.29_Setup_win64.exe**
 
 ```text
-8786d57989d6550cb67c354c2ea479c4b38d3960613af864335e719b1ed31727
+84e7186459d658b7606c745a30c9718c7abb32d586115c277cb714523a21db5a
 ```
 
-**RenPyTranslator_11_28_win64.zip**
+**RenPyTranslator_11_29_win64.zip**
 
 ```text
-23a52e483f4e42076a7b245c76a6eb733c972b1c15ead603d2ff270b9a2ab869
+b2dcfff8a666038aff955230a73f5198695ca2fdcbe77157109b027d8da5f9ef
 ```
 
-[Все контрольные суммы релиза v11.28](https://github.com/UFrimNe/RenPyTranslator/releases/download/v11.28/SHA256SUMS.txt).
+[Все контрольные суммы релиза v11.29](https://github.com/UFrimNe/RenPyTranslator/releases/download/v11.29/SHA256SUMS.txt).
 
 В PowerShell можно получить SHA-256 скачанного установщика:
 
 ```powershell
-(Get-FileHash ".\RenPyTranslator_11.28_Setup_win64.exe" -Algorithm SHA256).Hash
+(Get-FileHash ".\RenPyTranslator_11.29_Setup_win64.exe" -Algorithm SHA256).Hash
 ```
 
 SHA-256 помогает сверить скачанный файл с опубликованным релизом; антивирусную проверку выполняет VirusTotal.
