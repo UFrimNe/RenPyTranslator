@@ -45,6 +45,15 @@ jobs:
       - name: Prepare portable runtimes
         shell: pwsh
         run: ./app/desktop/prepare-runtime.ps1
+      - name: Verify independent installer with isolated portable Python
+        shell: pwsh
+        run: |
+          $Helper = Join-Path $env:RUNNER_TEMP 'rpts-helper-check'
+          New-Item -ItemType Directory -Force $Helper | Out-Null
+          Copy-Item app/tools/apply_update.py $Helper
+          Copy-Item app/src/rpts/update_package.py $Helper
+          & runtime/python/python.exe "$Helper/apply_update.py" --self-check
+          if ($LASTEXITCODE -ne 0) { throw 'Independent update helper failed' }
       - name: Package complete program
         run: python app/tools/package_release.py --build-id ${{ github.sha }} --build-number ${{ github.run_id }}
       - name: Validate packaged inventory

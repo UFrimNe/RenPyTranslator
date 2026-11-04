@@ -3,6 +3,9 @@ import hashlib
 import io
 import json
 import os
+import shutil
+import subprocess
+import sys
 import tempfile
 import unittest
 import urllib.error
@@ -146,6 +149,43 @@ class UpdateTests(unittest.TestCase):
             with self.assertRaises(RuntimeError):
                 with pkg.FileLock(self.root/'data/operation.lock'): pass
         with pkg.FileLock(self.root/'data/operation.lock'): pass
+
+    def test_helper_imports_from_its_copy_with_isolated_python_path(self):
+        helper = Path(self.temp.name)/'independent'
+        helper.mkdir()
+        app = Path(__file__).resolve().parents[1]
+        shutil.copy2(app/'tools/apply_update.py', helper/'apply_update.py')
+        shutil.copy2(app/'src/rpts/update_package.py', helper/'update_package.py')
+        result = subprocess.run([sys.executable, '-I', str(helper/'apply_update.py'), '--self-check'],
+                                capture_output=True, text=True, encoding='utf-8', timeout=10)
+        self.assertEqual(0, result.returncode, result.stderr)
+
+    @unittest.skipUnless(os.name == 'nt', 'Actual Windows file sharing')
+    def test_actual_windows_file_lock_causes_complete_rollback(self):
+        release = self.pack()
+        self.put('app/web/app.js', b'old locked frontend')
+        with (self.root/'app/web/app.js').open('rb'):
+            with self.assertRaises(PermissionError): pkg.install(self.root, self.archive, release)
+        self.assertEqual(b'old locked frontend', (self.root/'app/web/app.js').read_bytes())
+        self.assertFalse((self.root/'app/VERSION.txt').exists())
+
+    @unittest.skipUnless(os.name == 'nt', 'Actual Windows process handles')
+    def test_windows_waits_for_exact_process_handle_and_accepts_cancellation(self):
+        ready, cancel = self.root/'ready', self.root/'cancel'
+        child = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(.5)'])
+        try:
+            pkg.wait_for_parents([child.pid], ready, cancel, timeout=10)
+            self.assertTrue(ready.exists())
+            self.assertIsNotNone(child.poll())
+        finally:
+            child.wait(timeout=10)
+        child = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(20)'])
+        try:
+            cancel.touch()
+            with self.assertRaises(pkg.HandoffCancelled): pkg.wait_for_parents([child.pid], ready, cancel)
+            self.assertIsNone(child.poll())
+        finally:
+            child.kill(); child.wait(timeout=10)
 
     def test_download_verifies_outer_hash_and_removes_partial(self):
         release = self.pack()

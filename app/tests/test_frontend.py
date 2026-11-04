@@ -180,7 +180,8 @@ def run():
      assert page.locator('.select-menu:visible').evaluate('(d)=>{let r=d.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight;}')
      page.keyboard.press('Escape')
     assert all(url.startswith(f'http://127.0.0.1:{server.server_port}/') for url in requests),requests
-    assert not any('/api/update/' in url or '/api/browse' in url for url in requests),requests
+    assert not any('/api/browse' in url for url in requests),requests
+    assert sum('/api/update/install' in url for url in requests)==1,requests
     assert not errors,errors
     fallback=browser.new_page(viewport={'width':1024,'height':768})
     fallback.goto(f'http://127.0.0.1:{server.server_port}/#{app.token}')

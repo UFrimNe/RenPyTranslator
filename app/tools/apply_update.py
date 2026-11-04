@@ -3,10 +3,15 @@ from pathlib import Path
 import sys
 
 if (Path(__file__).parent/'update_package.py').is_file():
+    # Embeddable Python's ._pth omits the script directory, even for this helper.
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
     from update_package import main
 else:
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'src'))
     from rpts.update_package import main
 
 if __name__ == '__main__':
-    raise SystemExit(main())
+    if sys.argv[1:] == ['--self-check']:
+        print('Independent update helper OK')
+    else:
+        raise SystemExit(main())
