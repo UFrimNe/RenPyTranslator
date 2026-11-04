@@ -3,6 +3,17 @@ $ErrorActionPreference = 'Stop'
 if (-not $env:GH_TOKEN -or -not $env:GH_REPO -or -not $env:GITHUB_SHA) { throw 'Publishing requires GitHub Actions credentials and commit metadata' }
 if ($env:GITHUB_REF -ne 'refs/heads/main') { throw 'Public releases are published only from main' }
 $Root = (Resolve-Path "$PSScriptRoot/../..").Path
+function Get-VersionRelease([string]$Tag) {
+    $Text = gh api "repos/$env:GH_REPO/releases/tags/$Tag" 2>$null
+    if ($LASTEXITCODE -eq 0) { return ($Text | ConvertFrom-Json) }
+    # Drafts have no public tag endpoint yet. Resolve their database ID from the authenticated list.
+    $List = (gh api "repos/$env:GH_REPO/releases?per_page=100") | ConvertFrom-Json
+    if ($LASTEXITCODE -ne 0) { throw 'Cannot inspect release drafts' }
+    $VersionCandidates = @($List | Where-Object { $_.tag_name -eq $Tag })
+    if ($VersionCandidates.Count -gt 1) { throw "Multiple release drafts for $Tag; inspect them before publishing" }
+    if ($VersionCandidates.Count -eq 1) { return $VersionCandidates[0] }
+    return $null
+}
 Push-Location $Root
 try {
     $Current = gh api "repos/$env:GH_REPO/git/ref/heads/main" --jq '.object.sha'
@@ -13,9 +24,8 @@ try {
     $Stem = "RenPyTranslator_$($Version.Replace('.','_'))"
     $Assets = @("dist/$($Stem)_win64.zip", "dist/RenPyTranslator_$($Version)_Setup_win64.exe", "dist/$($Stem)_source.zip", 'dist/update.json', 'dist/SHA256SUMS.txt')
     foreach ($Asset in $Assets) { if (-not (Test-Path $Asset)) { throw "Missing release asset: $Asset" } }
-    $ExistingText = gh api "repos/$env:GH_REPO/releases/tags/$Tag" 2>$null
-    $Exists = $LASTEXITCODE -eq 0
-    if ($Exists) { $Existing = $ExistingText | ConvertFrom-Json }
+    $Existing = Get-VersionRelease $Tag
+    $Exists = $null -ne $Existing
     if ($Exists -and -not $Existing.draft) {
         Write-Host "$Tag is already published and remains unchanged. Bump app/VERSION.txt for a new release."
     } else {
@@ -24,6 +34,7 @@ try {
         if (-not $Exists) {
             gh release create $Tag --target $env:GITHUB_SHA --draft --title "RenPyTranslator $Version" --notes-file $Notes
             if ($LASTEXITCODE -ne 0) { throw 'Cannot create release draft' }
+            $Existing = Get-VersionRelease $Tag
         } else {
             gh release edit $Tag --target $env:GITHUB_SHA --title "RenPyTranslator $Version" --notes-file $Notes
             if ($LASTEXITCODE -ne 0) { throw 'Cannot refresh release draft' }
@@ -35,7 +46,8 @@ try {
         }
         gh release upload $Tag @Assets --clobber
         if ($LASTEXITCODE -ne 0) { throw 'Cannot upload all release files' }
-        $Published = (gh api "repos/$env:GH_REPO/releases/tags/$Tag") | ConvertFrom-Json
+        if (-not $Existing.id) { throw 'Cannot identify release draft' }
+        $Published = (gh api "repos/$env:GH_REPO/releases/$($Existing.id)") | ConvertFrom-Json
         if ($LASTEXITCODE -ne 0) { throw 'Cannot verify uploaded assets' }
         foreach ($Asset in $Assets) {
             $Local = Get-Item $Asset
