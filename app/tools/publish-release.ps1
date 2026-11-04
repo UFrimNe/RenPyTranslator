@@ -46,7 +46,14 @@ try {
         }
         gh release upload $Tag @Assets --clobber
         if ($LASTEXITCODE -ne 0) { throw 'Cannot upload all release files' }
-        if (-not $Existing.id) { throw 'Cannot identify release draft' }
+        # A newly created draft may not appear in the release list immediately.
+        # Resolve it again after upload instead of relying on the first lookup.
+        for ($Attempt = 0; $Attempt -lt 6; $Attempt++) {
+            $Existing = Get-VersionRelease $Tag
+            if ($Existing.id) { break }
+            Start-Sleep -Seconds 3
+        }
+        if (-not $Existing.id) { throw 'Cannot identify uploaded release draft after retries' }
         $Published = (gh api "repos/$env:GH_REPO/releases/$($Existing.id)") | ConvertFrom-Json
         if ($LASTEXITCODE -ne 0) { throw 'Cannot verify uploaded assets' }
         foreach ($Asset in $Assets) {
