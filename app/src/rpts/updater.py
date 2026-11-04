@@ -1,4 +1,4 @@
-"""Fixed GitHub dev channel, background download and detached Windows handoff."""
+"""Versioned GitHub releases, background download and detached Windows handoff."""
 from __future__ import annotations
 
 import ctypes
@@ -18,7 +18,7 @@ from pathlib import Path
 from . import update_package as package
 
 REPO = 'UFrimNe/RenPyTranslator'
-FEED = f'https://github.com/{REPO}/releases/download/dev-latest/dev-update.json'
+FEED = f'https://github.com/{REPO}/releases/latest/download/update.json'
 BUSY = {'downloading', 'preparing', 'restarting'}
 
 
@@ -32,12 +32,12 @@ class GitHubRedirects(urllib.request.HTTPRedirectHandler):
 
 
 def open_url(url):
-    request = urllib.request.Request(url, headers={'User-Agent': 'RPTS-dev-updater/1', 'Cache-Control': 'no-cache'})
+    request = urllib.request.Request(url, headers={'User-Agent': 'RPTS-updater/1', 'Cache-Control': 'no-cache'})
     return urllib.request.build_opener(GitHubRedirects()).open(request, timeout=30)
 
 
 def validate_release(value):
-    if not isinstance(value, dict) or value.get('schema') != 1 or value.get('channel') != 'dev' or value.get('platform') != 'win-x64':
+    if not isinstance(value, dict) or value.get('schema') != 1 or value.get('channel') != 'stable' or value.get('platform') != 'win-x64':
         raise ValueError('Неверный канал или формат обновления.')
     if value.get('min_updater', 1) > package.SCHEMA:
         raise ValueError('Нужна новая полная сборка с GitHub: этот установщик устарел.')
@@ -51,7 +51,7 @@ def validate_release(value):
         raise ValueError('Неверный размер обновления.')
     url = urllib.parse.urlsplit(str(value.get('package_url', '')))
     if url.scheme != 'https' or url.netloc != 'github.com' or url.query or url.fragment or not re.fullmatch(
-        '/' + REPO + r'/releases/download/dev-' + str(value['build_number']) + r'/RenPyTranslator_[A-Za-z0-9_.-]+\.zip', url.path):
+        '/' + re.escape(REPO) + r'/releases/download/v' + re.escape(value['version']) + r'/RenPyTranslator_' + re.escape(value['version'].replace('.', '_')) + r'_win64\.zip', url.path):
         raise ValueError('Архив обновления должен находиться в релизах нашего репозитория.')
     return {k: value[k] for k in ('schema', 'channel', 'platform', 'version', 'build_id', 'build_number', 'sha256',
                                  'bytes', 'unpacked_bytes', 'package_url')} | {'notes': str(value.get('notes', ''))[:4000]}
@@ -87,7 +87,7 @@ def close_host(pid):
     try:
         size = ctypes.c_uint32(32768); name = ctypes.create_unicode_buffer(size.value)
         if not handle or not kernel.QueryFullProcessImageNameW(handle, 0, name, ctypes.byref(size)) or Path(name.value).name.lower() != 'rpts.desktop.exe':
-            raise RuntimeError('Не найдено окно RPTS. Запусти приложение через RPTS.bat.')
+            raise RuntimeError('Не найдено окно RPTS. Запусти приложение через RPTS.exe или RPTS.bat.')
     finally:
         if handle: kernel.CloseHandle(handle)
     user = ctypes.WinDLL('user32', use_last_error=True)
@@ -113,7 +113,7 @@ class Updater:
         self.root = Path(root)
         self.folder = self.root/'data/updates'
         self.lock = threading.RLock()
-        self.value = {'status': 'idle', 'channel': 'dev', 'message': 'Проверка обновлений ещё не выполнялась.', 'progress': None}
+        self.value = {'status': 'idle', 'channel': 'stable', 'message': 'Проверка обновлений ещё не выполнялась.', 'progress': None}
         self.release = None
 
     def snapshot(self):
@@ -132,7 +132,7 @@ class Updater:
         with self.lock:
             if self.active() or self.value['status'] == 'checking':
                 return self.snapshot()
-            self.set(status='checking', message='Проверяю сборку в dev…', progress=None)
+            self.set(status='checking', message='Проверяю новую версию…', progress=None)
         threading.Thread(target=self._check, daemon=True).start()
         return self.snapshot()
 
@@ -149,15 +149,18 @@ class Updater:
                 raise ValueError('Слишком большой манифест обновления.')
             release = validate_release(json.loads(raw))
             current = package.read_json(self.root/'app/release_manifest.json')
-            latest = release['build_id'] == current.get('build_id') or release['build_number'] <= current.get('build_number', 0)
+            current_version = tuple(int(x) for x in current.get('version', '0').split('.'))
+            next_version = tuple(int(x) for x in release['version'].split('.'))
+            latest = release['build_id'] == current.get('build_id') or current_version > next_version or (
+                (current_version == next_version or not current.get('version')) and release['build_number'] <= current.get('build_number', 0))
             with self.lock:
                 self.release = None if latest else release
-                self.set(status='current' if latest else 'available', message='Установлена актуальная сборка dev.' if latest else 'Доступна новая сборка dev.',
+                self.set(status='current' if latest else 'available', message='Установлена актуальная версия.' if latest else 'Доступна новая версия.',
                          checked_at=time.time(), release=release)
             package.log(self.root, 'checked', build_id=release['build_id'], available=not latest)
         except urllib.error.HTTPError as exc:
             self.set(status='unpublished' if exc.code == 404 else 'error',
-                     message='Первая сборка dev ещё не опубликована.' if exc.code == 404 else f'GitHub недоступен (HTTP {exc.code}). Попробуй позже.', checked_at=time.time())
+                     message='Релиз ещё не опубликован.' if exc.code == 404 else f'GitHub недоступен (HTTP {exc.code}). Попробуй позже.', checked_at=time.time())
             package.log(self.root, 'check_failed', error=str(exc))
         except Exception as exc:
             self.set(status='error', message='Не удалось проверить обновления: '+str(exc), checked_at=time.time())

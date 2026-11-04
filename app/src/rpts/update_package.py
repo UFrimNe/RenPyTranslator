@@ -17,10 +17,10 @@ from pathlib import Path
 
 SCHEMA = 1
 MAX_BYTES = 3 * 1024**3
-ROOT_FILES = {'README.md', 'AGENTS.md', 'RPTS.bat', 'RPTS.vbs', 'RPTS-Console.bat', 'RPTS-Debug.bat'}
+ROOT_FILES = {'README.md', 'AGENTS.md', 'Build.bat', 'RPTS.exe', 'RPTS.bat', 'RPTS.vbs', 'RPTS-Console.bat', 'RPTS-Debug.bat'}
 REQUIRED = {'app/VERSION.txt', 'app/tools/launch_desktop.py', 'app/tools/apply_update.py',
             'app/src/rpts/update_package.py', 'app/src/rpts/updater.py', 'app/web/index.html',
-            'app/desktop/bin/RPTS.Desktop.exe', 'runtime/python/python.exe', 'runtime/dotnet/dotnet.exe', 'RPTS.bat'}
+            'app/desktop/bin/RPTS.Desktop.exe', 'runtime/python/python.exe', 'runtime/dotnet/dotnet.exe', 'RPTS.bat', 'RPTS.exe'}
 
 
 def read_json(path, default=None):
@@ -74,10 +74,31 @@ def safe_target(root, rel):
     return path
 
 
+class RunningMutex:
+    """Let the Windows setup refuse installation while GUI, CLI or updater is active."""
+    def __init__(self): self.handle = None
+
+    def __enter__(self):
+        if os.name == 'nt':
+            kernel = ctypes.WinDLL('kernel32', use_last_error=True)
+            kernel.CreateMutexW.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_wchar_p]
+            kernel.CreateMutexW.restype = ctypes.c_void_p
+            self.handle = kernel.CreateMutexW(None, False, 'Local\\RPTS-Running')
+            if not self.handle: raise OSError(ctypes.get_last_error(), 'Cannot create RPTS running mutex')
+        return self
+
+    def __exit__(self, *args):
+        if self.handle:
+            kernel = ctypes.WinDLL('kernel32', use_last_error=True)
+            kernel.CloseHandle.argtypes = [ctypes.c_void_p]
+            kernel.CloseHandle(self.handle); self.handle = None
+
+
 class FileLock:
     def __init__(self, path):
         self.path = Path(path)
         self.file = None
+        self.running = None
 
     def __enter__(self):
         self.path.parent.mkdir(parents=True, exist_ok=True)
@@ -92,8 +113,10 @@ class FileLock:
             else:
                 import fcntl
                 fcntl.flock(self.file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            self.running = RunningMutex().__enter__()
         except OSError:
             self.file.close(); self.file = None
+            if self.running: self.running.__exit__(None, None, None)
             raise RuntimeError('RPTS ещё работает в другом окне. Закрой его и повтори обновление.')
         return self
 
@@ -103,6 +126,7 @@ class FileLock:
                 import msvcrt
                 self.file.seek(0); msvcrt.locking(self.file.fileno(), msvcrt.LK_UNLCK, 1)
             self.file.close(); self.file = None
+            if self.running: self.running.__exit__(*args)
 
 
 def inspect_package(archive, expected=None):
@@ -125,11 +149,11 @@ def inspect_package(archive, expected=None):
         if manifest_name not in members or members[manifest_name][1].file_size > 8*1024**2:
             raise ValueError('В архиве нет корректного манифеста.')
         manifest = json.loads(z.read(members[manifest_name][1]))
-        if manifest.get('schema') != SCHEMA or manifest.get('channel') != 'dev' or manifest.get('platform') != 'win-x64':
+        if manifest.get('schema') != SCHEMA or manifest.get('channel') != 'stable' or manifest.get('platform') != 'win-x64':
             raise ValueError('Неподдерживаемый формат или канал обновления.')
         if not re.fullmatch(r'[0-9a-f]{40}', str(manifest.get('build_id', ''))) or type(manifest.get('build_number')) is not int:
             raise ValueError('Неверный номер сборки.')
-        if expected and any(manifest.get(k) != expected.get(k) for k in ('build_id', 'build_number', 'version')):
+        if expected and any(manifest.get(k) != expected.get(k) for k in ('build_id', 'build_number', 'version', 'channel')):
             raise ValueError('Архив не соответствует объявленной сборке.')
         rows = manifest.get('files')
         if not isinstance(rows, list) or not rows:

@@ -27,6 +27,7 @@ internal static class Program
         Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
         int subprocess = CefSharp.BrowserSubprocess.SelfHost.Main(args);
         if (subprocess >= 0) return subprocess;
+        using var running = new Mutex(false, "Local\\RPTS-Running");
         string key = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(Root.ToLowerInvariant()))).Substring(0,24);
         using var mutex = new Mutex(true, "Local\\RPTS-Desktop-" + key, out bool created);
         if (!created) return 0;

@@ -60,7 +60,7 @@ Portable BAT/VBS-файлы ожидают комплектные среды в 
 
 Для полноценной переносимой сборки дополнительно нужны комплектные Python,
 .NET runtime, CEF-зависимости и установщик VC Runtime. Они не хранятся в Git.
-Полные Windows-сборки из dev выпускает `.github/workflows/dev-release.yml`.
+Полные Windows-сборки выпускает `.github/workflows/release.yml`.
 Устройство канала, формата архива и восстановления описано в [UPDATES.md](UPDATES.md).
 
 ## Ветки и поставка
@@ -75,3 +75,6 @@ Portable BAT/VBS-файлы ожидают комплектные среды в 
 Использованные иконки и их атрибуция сохранены в
 `app/FLATICON-LICENSE.txt` и `app/ICON_SOURCES.json`. Этот импорт не назначает
 проекту новую лицензию и не меняет лицензии сторонних компонентов.
+
+Полная сборка: [BUILD_WINDOWS.md](BUILD_WINDOWS.md). Публичный main выпускает
+версионный релиз; dev сохраняет Actions artifact.

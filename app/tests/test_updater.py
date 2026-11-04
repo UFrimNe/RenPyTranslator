@@ -30,7 +30,7 @@ class UpdateTests(unittest.TestCase):
         self.files['app/web/app.js'] = b'new frontend'
 
     def pack(self, extra=None, corrupt=None, change_manifest=None):
-        manifest = {'schema': 1, 'channel': 'dev', 'platform': 'win-x64', 'version': '11.27',
+        manifest = {'schema': 1, 'channel': 'stable', 'platform': 'win-x64', 'version': '11.27',
                     'build_id': 'a'*40, 'build_number': 123,
                     'files': [{'path': p, 'bytes': len(v), 'sha256': hashlib.sha256(v).hexdigest()} for p, v in self.files.items()]}
         if change_manifest: change_manifest(manifest)
@@ -39,10 +39,10 @@ class UpdateTests(unittest.TestCase):
                 z.writestr('RenPyTranslator/'+p, b'X'*len(v) if corrupt == p else v)
             z.writestr('RenPyTranslator/app/release_manifest.json', json.dumps(manifest))
             for p, v in (extra or {}).items(): z.writestr(p, v)
-        release = {'schema': 1, 'channel': 'dev', 'platform': 'win-x64', 'version': '11.27', 'build_id': 'a'*40,
+        release = {'schema': 1, 'channel': 'stable', 'platform': 'win-x64', 'version': '11.27', 'build_id': 'a'*40,
                    'build_number': 123, 'bytes': self.archive.stat().st_size, 'unpacked_bytes': 100000,
                    'sha256': pkg.sha256(self.archive),
-                   'package_url': 'https://github.com/UFrimNe/RenPyTranslator/releases/download/dev-123/RenPyTranslator_11_27_dev_win64.zip'}
+                   'package_url': 'https://github.com/UFrimNe/RenPyTranslator/releases/download/v11.27/RenPyTranslator_11_27_win64.zip'}
         return release
 
     def put(self, rel, value):
@@ -215,8 +215,8 @@ class UpdateTests(unittest.TestCase):
 
     def test_release_requires_our_pinned_https_asset(self):
         release = self.pack()
-        self.assertEqual('dev', updater.validate_release(release)['channel'])
-        for field, value in [('package_url', 'https://example.com/a.zip'), ('package_url', release['package_url'].replace('dev-123', 'dev-latest')),
+        self.assertEqual('stable', updater.validate_release(release)['channel'])
+        for field, value in [('package_url', 'https://example.com/a.zip'), ('package_url', release['package_url'].replace('v11.27', 'v11.26')),
                              ('package_url', release['package_url']+'?token=secret'), ('sha256', 'bad'), ('build_number', '123'),
                              ('channel', 'main'), ('min_updater', 999), ('bytes', -1)]:
             with self.subTest(field=field, value=value):

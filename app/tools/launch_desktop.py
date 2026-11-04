@@ -3,6 +3,7 @@ from pathlib import Path
 import ctypes,hashlib,json,os,platform,re,struct,subprocess,sys,time,traceback,zipfile
 ROOT=Path(__file__).resolve().parents[2]
 CRITICAL=(
+ 'RPTS.exe',
  'app/tools/desktop_server.py','app/desktop/bin/RPTS.Desktop.exe','app/desktop/bin/RPTS.Desktop.dll',
  'app/desktop/bin/RPTS.Desktop.deps.json','app/desktop/bin/RPTS.Desktop.runtimeconfig.json',
  'app/desktop/bin/CefSharp.dll','app/desktop/bin/CefSharp.Core.dll','app/desktop/bin/CefSharp.Core.Runtime.dll',

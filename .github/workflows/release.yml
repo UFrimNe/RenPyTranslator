@@ -1,0 +1,83 @@
+name: Windows build and release
+
+on:
+  push:
+    branches: [main, dev]
+  workflow_dispatch:
+
+concurrency:
+  group: windows-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  PYTHONUTF8: '1'
+  PYTHONIOENCODING: utf-8
+
+jobs:
+  windows:
+    runs-on: windows-2022
+    timeout-minutes: 45
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Source regression tests
+        run: python app/tools/check_source.py
+      - name: Browser regression
+        run: |
+          python -m pip install playwright
+          python -m playwright install chromium
+          python app/tests/test_frontend.py
+      - name: Prepare Inno Setup compiler
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "${env:ProgramFiles(x86)}/Inno Setup 6/ISCC.exe")) {
+            choco install innosetup --yes --no-progress
+            if ($LASTEXITCODE -ne 0) { throw 'Inno Setup installation failed' }
+          }
+      - name: Build EXE, complete portable ZIP, installer and sources
+        shell: pwsh
+        run: ./app/tools/build-release.ps1 -SkipTests -BuildId ${{ github.sha }} -BuildNumber ${{ github.run_id }}
+      - name: Verify portable package and independent updater
+        shell: pwsh
+        run: |
+          $env:PYTHONPATH = 'app/src'
+          python -c "import glob,json; from rpts.update_package import inspect_package; inspect_package(glob.glob('dist/*_win64.zip')[0],json.load(open('dist/update.json'))); print('Portable package verified')"
+          if ($LASTEXITCODE -ne 0) { throw 'Invalid portable package' }
+          $Helper = Join-Path $env:RUNNER_TEMP 'rpts-helper-check'
+          New-Item -ItemType Directory -Force $Helper | Out-Null
+          Copy-Item app/tools/apply_update.py $Helper
+          Copy-Item app/src/rpts/update_package.py $Helper
+          & runtime/python/python.exe "$Helper/apply_update.py" --self-check
+          if ($LASTEXITCODE -ne 0) { throw 'Independent updater failed' }
+          $Launcher = Start-Process ./RPTS.exe -ArgumentList '--self-check' -Wait -PassThru
+          if ($Launcher.ExitCode -ne 0) { throw 'Root EXE failed' }
+      - name: Install and uninstall smoke check with user data preservation
+        shell: pwsh
+        run: ./app/tools/test-installer.ps1
+      - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/dev'
+        continue-on-error: true
+        with:
+          name: RenPyTranslator-Windows
+          path: |
+            dist/*_win64.zip
+            dist/*_source.zip
+          compression-level: 0
+          retention-days: 1
+      - name: Publish versioned release and retire legacy tags
+        if: github.ref == 'refs/heads/main'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: ./app/tools/publish-release.ps1 -RetireTags 'dev-latest','dev-41801927324'

@@ -1,4 +1,4 @@
-"""Build a clean full portable ZIP plus a pinned dev-channel update descriptor."""
+"""Build a clean full portable ZIP plus a versioned release update descriptor."""
 from __future__ import annotations
 import argparse
 import json
@@ -10,7 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'src'))
 from rpts.update_package import REQUIRED, ROOT_FILES, owned_path, sha256, write_json
 
 SOURCE_FOLDERS = ('app/src', 'app/tools', 'app/web', 'app/templates', 'app/tests',
-                  'app/desktop/src', 'app/desktop/picker', 'docs')
+                  'app/desktop/src', 'app/desktop/picker', 'app/launcher', 'app/installer', 'docs')
 SOURCE_FILES = ('app/VERSION.txt', 'app/pyproject.toml', 'app/ICON_SOURCES.json',
                 'app/FLATICON-LICENSE.txt', 'app/THIRD_PARTY.md', 'app/desktop/build.ps1', 'app/desktop/prepare-runtime.ps1')
 RUNTIME_FOLDERS = ('app/desktop/bin', 'runtime/python', 'runtime/dotnet', 'runtime/installers')
@@ -43,11 +43,11 @@ def build(root, out, build_id, build_number, notes=''):
     out.mkdir(parents=True, exist_ok=True)
     version = (root/'app/VERSION.txt').read_text(encoding='utf-8').strip()
     files = distribution_files(root)
-    manifest = {'schema': 1, 'channel': 'dev', 'platform': 'win-x64', 'version': version,
+    manifest = {'schema': 1, 'channel': 'stable', 'platform': 'win-x64', 'version': version,
                 'build_id': build_id, 'build_number': int(build_number),
                 'files': [{'path': rel, 'bytes': (root/rel).stat().st_size, 'sha256': sha256(root/rel)} for rel in files]}
     write_json(root/'app/release_manifest.json', manifest)
-    name = f'RenPyTranslator_{version.replace(".", "_")}_dev_win64.zip'
+    name = f'RenPyTranslator_{version.replace(".", "_")}_win64.zip'
     archive = out/name
     with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED, compresslevel=6) as z:
         for rel in files + ['app/release_manifest.json']:
@@ -55,8 +55,8 @@ def build(root, out, build_id, build_number, notes=''):
     descriptor = {k: manifest[k] for k in ('schema', 'channel', 'platform', 'version', 'build_id', 'build_number')}
     descriptor.update(min_updater=1, bytes=archive.stat().st_size, sha256=sha256(archive),
                       unpacked_bytes=sum(x['bytes'] for x in manifest['files'])+(root/'app/release_manifest.json').stat().st_size,
-                      package_url=f'https://github.com/UFrimNe/RenPyTranslator/releases/download/dev-{build_number}/{name}', notes=notes)
-    write_json(out/'dev-update.json', descriptor)
+                      package_url=f'https://github.com/UFrimNe/RenPyTranslator/releases/download/v{version}/{name}', notes=notes)
+    write_json(out/'update.json', descriptor)
     return descriptor
 
 
@@ -66,6 +66,6 @@ if __name__ == '__main__':
     parser.add_argument('--out', type=Path, default=Path('dist'))
     parser.add_argument('--build-id', required=True)
     parser.add_argument('--build-number', type=int, required=True)
-    parser.add_argument('--notes', default='Исправления и улучшения из ветки dev. Подробности — в истории GitHub.')
+    parser.add_argument('--notes', default='Исправления и улучшения программы. Подробности — в истории GitHub.')
     args = parser.parse_args()
     print(json.dumps(build(args.root, args.out, args.build_id, args.build_number, args.notes), ensure_ascii=False))

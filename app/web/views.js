@@ -180,7 +180,7 @@ document.addEventListener('keydown',event=>{
 function updatesPanel(){
  const u=state.update||{status:'idle'},r=u.release;
  const active=['checking','downloading','preparing','restarting'].includes(u.status);
- return `<section class="panel"><div class="section-bar"><div><span class="status-label purple">GitHub · dev · тестовые сборки</span><h2>Обновления программы</h2><p>Текущая версия: ${e(state.version)}. Проверка выполняется при запуске.</p></div><span class="model-glyph">${icon('refresh')}</span></div>
+ return `<section class="panel"><div class="section-bar"><div><span class="status-label purple">GitHub · официальные релизы</span><h2>Обновления программы</h2><p>Текущая версия: ${e(state.version)}. Проверка выполняется при запуске.</p></div><span class="model-glyph">${icon('refresh')}</span></div>
  <p role="status">${e(u.message||'Проверка ещё не выполнялась.')}</p>
  ${active?(u.progress===null||u.progress===undefined?'<div class="progress indeterminate"><span></span></div>':progress(u.progress)):''}
  ${r?`<p class="muted">Сборка ${e(r.version)} · ${e(r.build_id?.slice(0,8))} · ${fmt(Math.ceil(r.bytes/1024/1024))} МБ</p>${r.notes?`<p style="white-space:pre-wrap">${e(r.notes)}</p>`:''}`:''}
@@ -188,5 +188,5 @@ function updatesPanel(){
  ${busy()&&!updateBusy()?'<p class="muted">Сначала заверши текущую задачу, затем установи обновление.</p>':''}
  <div class="notice">Обновляются только файлы программы и среды запуска. Модели, игры, проекты, переводы и настройки сохраняются. Во время установки окно закроется и откроется снова.</div>
  ${u.last_result?.status==='failed'?`<div class="notice warning">Последняя установка не завершилась: ${e(u.last_result.message)}. Подробности есть в диагностическом ZIP.</div>`:''}
- <p class="muted small">Интернет нужен только для проверки и загрузки. Без него можно продолжать перевод. Ветка dev содержит сборки в разработке.</p></section>`;
+ <p class="muted small">Интернет нужен только для проверки и загрузки. Без него можно продолжать перевод. Обновления публикуются после автоматических проверок.</p></section>`;
 }

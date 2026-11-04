@@ -47,3 +47,6 @@ venv/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Root native launcher is built from app/launcher, not checked in
+/RPTS.exe

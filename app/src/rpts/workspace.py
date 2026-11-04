@@ -76,7 +76,7 @@ def project_id(game):
     return slug+'-'+hashlib.sha1(str(game).lower().encode('utf-8','replace')).hexdigest()[:10]
 
 class OperationLock:
-    def __init__(self, path): self.path=Path(path); self.file=None
+    def __init__(self, path): self.path=Path(path); self.file=None;self.running=None
     def __enter__(self):
         self.path.parent.mkdir(parents=True,exist_ok=True)
         self.file=self.path.open('a+b')
@@ -90,6 +90,8 @@ class OperationLock:
             else:
                 import fcntl
                 fcntl.flock(self.file.fileno(),fcntl.LOCK_EX|fcntl.LOCK_NB)
+            from .update_package import RunningMutex
+            self.running=RunningMutex().__enter__()
         except OSError:
             self.file.close();self.file=None
             raise RuntimeError('Уже выполняется другая операция RPTS. Дождись её завершения или закрой второе окно.')
@@ -103,6 +105,7 @@ class OperationLock:
                 import fcntl
                 fcntl.flock(self.file.fileno(),fcntl.LOCK_UN)
             self.file.close()
+            if self.running:self.running.__exit__(*args)
 
 class Workspace:
     def __init__(self,root):
