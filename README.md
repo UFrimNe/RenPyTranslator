@@ -9,6 +9,7 @@
 [![Windows build](https://github.com/UFrimNe/RenPyTranslator/actions/workflows/release.yml/badge.svg?branch=main)](https://github.com/UFrimNe/RenPyTranslator/actions/workflows/release.yml)
 [![Release](https://img.shields.io/github/v/release/UFrimNe/RenPyTranslator?color=b8a0ff&label=версия)](https://github.com/UFrimNe/RenPyTranslator/releases/latest)
 [![Windows](https://img.shields.io/badge/Windows-10%20%2F%2011%20x64-5865f2)](docs/USER_GUIDE.md)
+[![VirusTotal](https://img.shields.io/badge/VirusTotal-проверить_файлы-394eff?logo=virustotal&logoColor=white)](#проверка-на-вирусы)
 
 [**Скачать программу**](https://github.com/UFrimNe/RenPyTranslator/releases/latest) · [Как пользоваться](docs/USER_GUIDE.md) · [Собрать самому](docs/BUILD_WINDOWS.md) · [Сообщить о проблеме](https://github.com/UFrimNe/RenPyTranslator/issues)
 
@@ -30,6 +31,44 @@
 Проверка и скачивание обновлений требуют подключения; ошибка проверки не мешает переводу.
 
 > Обновление с 11.27: закрой программу и один раз распакуй новый полный ZIP в прежнюю папку с заменой файлов. Папки `data` и `runtime/local_ai` сохраняй. Старые технические теги удалены; следующие обновления доступны из нового лаунчера.
+
+## Проверка на вирусы
+
+Для файлов **релиза v11.28** добавлены ссылки на поиск отчётов VirusTotal по SHA-256:
+
+| Файл | VirusTotal |
+| --- | --- |
+| Установщик EXE | [Найти отчёт](https://www.virustotal.com/gui/file/8786d57989d6550cb67c354c2ea479c4b38d3960613af864335e719b1ed31727) |
+| Portable ZIP | [Найти отчёт](https://www.virustotal.com/gui/file/23a52e483f4e42076a7b245c76a6eb733c972b1c15ead603d2ff270b9a2ab869) |
+
+Если отчёт не найден, [открой VirusTotal](https://www.virustotal.com/gui/home/upload) и выбери скачанный EXE или ZIP для анализа. Отчёт относится к конкретному файлу с указанным хешем.
+
+<details>
+<summary><strong>Сверить контрольные суммы</strong></summary>
+
+**RenPyTranslator_11.28_Setup_win64.exe**
+
+```text
+8786d57989d6550cb67c354c2ea479c4b38d3960613af864335e719b1ed31727
+```
+
+**RenPyTranslator_11_28_win64.zip**
+
+```text
+23a52e483f4e42076a7b245c76a6eb733c972b1c15ead603d2ff270b9a2ab869
+```
+
+[Все контрольные суммы релиза v11.28](https://github.com/UFrimNe/RenPyTranslator/releases/download/v11.28/SHA256SUMS.txt).
+
+В PowerShell можно получить SHA-256 скачанного установщика:
+
+```powershell
+(Get-FileHash ".\RenPyTranslator_11.28_Setup_win64.exe" -Algorithm SHA256).Hash
+```
+
+SHA-256 помогает сверить скачанный файл с опубликованным релизом; антивирусную проверку выполняет VirusTotal.
+
+</details>
 
 ## Что умеет программа
 
