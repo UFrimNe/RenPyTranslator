@@ -1,3 +1,4 @@
+from db_helpers import connection as db_connection
 """Partial launch/install and static phone/UI regression, no model or game execution."""
 import contextlib
 import io
@@ -73,10 +74,10 @@ print('RESULT '+json.dumps(result,ensure_ascii=False))
         if cancel:
             flag=self.base/'cancel';flag.touch();env['RPTS_CANCEL_FILE']=str(flag)
         return subprocess.run([sys.executable,'-c',code,json.dumps(task),str(self.marker),'fail' if fail_install else 'ok'],
-                              cwd=self.ws.root,env=env,capture_output=True,text=True,timeout=30)
+                              cwd=self.ws.root,env=env,capture_output=True,text=True,encoding="utf-8",timeout=30)
 
     def partial(self):
-        with sqlite3.connect(self.db) as db:
+        with db_connection(self.db) as db:
             db.execute("UPDATE segments SET translation='Свежая правка, [name].' WHERE source_text LIKE 'Hello%'")
             db.execute("UPDATE segments SET status='pending',translation='' WHERE source_text='Let us go.'")
 
@@ -106,7 +107,7 @@ print('RESULT '+json.dumps(result,ensure_ascii=False))
     def test_empty_working_translation_does_not_replace_installed_patch(self):
         build_patch(self.db,self.db.parent/'patch');install_patch(self.db.parent/'patch',self.game)
         before=(self.game/MANIFEST_NAME).read_bytes()
-        with sqlite3.connect(self.db) as db:db.execute("UPDATE segments SET translation='',status='pending'")
+        with db_connection(self.db) as db:db.execute("UPDATE segments SET translation='',status='pending'")
         result=self.worker(True);self.assertNotEqual(0,result.returncode)
         self.assertFalse(self.marker.exists());self.assertEqual(before,(self.game/MANIFEST_NAME).read_bytes())
 
@@ -168,7 +169,7 @@ class StaticUITests(unittest.TestCase):
             # Scripted approved outputs validate the build adapter, not model quality.
             translations={'我马上回来。':'Я скоро вернусь.','你到哪儿了？':'Ты где сейчас?',
                           '我快到家了。':'Я уже почти дома.','未读消息':'Непрочитанные сообщения','返回':'Назад'}
-            with sqlite3.connect(path) as db:
+            with db_connection(path) as db:
                 for source,target in translations.items():
                     db.execute("UPDATE segments SET translation=?,status='approved',provider='manual' WHERE source_text=?",(target,source))
             manifest=build_patch(path,root/'patch')

@@ -12,6 +12,10 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  PYTHONUTF8: '1'
+  PYTHONIOENCODING: utf-8
+
 jobs:
   portable:
     if: github.ref == 'refs/heads/dev'
@@ -29,6 +33,12 @@ jobs:
           dotnet-version: '8.0.x'
       - name: Source regression tests
         run: python app/tools/check_source.py
+      - name: Install browser test dependencies
+        run: |
+          python -m pip install playwright
+          python -m playwright install chromium
+      - name: Launcher interface regression
+        run: python app/tests/test_frontend.py
       - name: Build CEF and folder picker
         shell: pwsh
         run: ./app/desktop/build.ps1

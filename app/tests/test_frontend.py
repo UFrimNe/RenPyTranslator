@@ -1,3 +1,4 @@
+from db_helpers import connection as db_connection
 """Real local API + Chromium UI regression. Isolated native picker replies are emulated."""
 from pathlib import Path
 import sys,tempfile,threading,shutil,json,os,time,sqlite3
@@ -13,7 +14,7 @@ def run():
   for directory in ['src','tools','templates']:
    shutil.copytree(ROOT/'app'/directory,ws.root/'app'/directory,ignore=shutil.ignore_patterns('__pycache__'))
   build_patch(db,db.parent/'patch');ws.save_translation(pid,db.parent/'patch','hy-mt2-7b-q4')
-  with sqlite3.connect(db) as connection:
+  with db_connection(db) as connection:
    connection.execute("UPDATE segments SET status='pending',translation='' WHERE source_text='Let us go.'")
   write_json(ws.settings/'desktop.json',{'active_project':pid})
   with patch.object(Desktop,'_hardware',lambda s:None):app=Desktop(ws.root)

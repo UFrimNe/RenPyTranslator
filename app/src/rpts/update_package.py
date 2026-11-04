@@ -13,7 +13,7 @@ import subprocess
 import sys
 import time
 import zipfile
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 
 SCHEMA = 1
 MAX_BYTES = 3 * 1024**3
@@ -127,7 +127,7 @@ def inspect_package(archive, expected=None):
         manifest = json.loads(z.read(members[manifest_name][1]))
         if manifest.get('schema') != SCHEMA or manifest.get('channel') != 'dev' or manifest.get('platform') != 'win-x64':
             raise ValueError('Неподдерживаемый формат или канал обновления.')
-        if not re.fullmatch(r'[0-9a-f]{40}', str(manifest.get('build_id', ''))) or not isinstance(manifest.get('build_number'), int):
+        if not re.fullmatch(r'[0-9a-f]{40}', str(manifest.get('build_id', ''))) or type(manifest.get('build_number')) is not int:
             raise ValueError('Неверный номер сборки.')
         if expected and any(manifest.get(k) != expected.get(k) for k in ('build_id', 'build_number', 'version')):
             raise ValueError('Архив не соответствует объявленной сборке.')

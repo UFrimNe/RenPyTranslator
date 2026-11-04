@@ -1,3 +1,4 @@
+from db_helpers import connection as db_connection
 """Normal translation repairs agreement itself; cached gender is not authority."""
 import contextlib,copy,io,json,sqlite3,sys,tempfile,unittest
 from pathlib import Path
@@ -23,7 +24,7 @@ class AutomaticTests(unittest.TestCase):
     setUp=fixtures.RepairTests.setUp
     tearDown=fixtures.RepairTests.tearDown
     def prepare(self):
-        with sqlite3.connect(self.db) as db:
+        with db_connection(self.db) as db:
             db.execute("UPDATE segments SET status='approved',provider='manual',translation='Сохранено.' WHERE status='pending' AND segment_id<>?",(self.ids[14],))
         cfg=load_config(APP/'templates/translation_config.mock.json')
         cfg['provider']['type']='openai_compatible'
@@ -43,7 +44,7 @@ class AutomaticTests(unittest.TestCase):
         cfg=self.prepare();result,provider=self.run_model(cfg,['Я понял.','Я наконец понял.','Понятно.'])
         self.assertEqual(2,result['automatic_gender_repairs']);self.assertEqual(3,result['translated']);self.assertEqual(3,len(provider.calls))
         backups=list((self.root/'backups').glob('*before-gender*'));self.assertEqual(1,len(backups))
-        with sqlite3.connect(self.db) as db,sqlite3.connect(backups[0]) as old:
+        with db_connection(self.db) as db,db_connection(backups[0]) as old:
             self.assertEqual(('Я понимала.','approved','manual'),db.execute('select translation,status,provider from segments where segment_id=?',(self.ids[16],)).fetchone())
             self.assertEqual('Я понял.',db.execute('select translation from segments where segment_id=?',(self.ids[15],)).fetchone()[0])
             self.assertEqual('Я понимала.',old.execute('select translation from segments where segment_id=?',(self.ids[12],)).fetchone()[0])
@@ -53,7 +54,7 @@ class AutomaticTests(unittest.TestCase):
         self.assertEqual(0,result['selected']);self.assertEqual(0,result['automatic_gender_repairs']);self.assertEqual([],provider.calls)
     def test_no_pending_rows_is_not_a_reason_to_skip_old_errors(self):
         cfg=self.prepare()
-        with sqlite3.connect(self.db) as db:db.execute("UPDATE segments SET status='approved',provider='manual',translation='Понятно.' WHERE segment_id=?",(self.ids[14],))
+        with db_connection(self.db) as db:db.execute("UPDATE segments SET status='approved',provider='manual',translation='Понятно.' WHERE segment_id=?",(self.ids[14],))
         result,provider=self.run_model(cfg,['Я понял.','Я наконец понял.'])
         self.assertEqual(2,result['selected']);self.assertEqual(2,result['automatic_gender_repairs']);self.assertEqual(2,len(provider.calls))
     def test_dry_run_plan_includes_repairs_without_model_or_backup(self):
@@ -66,7 +67,7 @@ class AutomaticTests(unittest.TestCase):
     def test_limit_remains_a_total_limit_including_repairs(self):
         cfg=self.prepare();result,provider=self.run_model(cfg,['Я понял.'],limit=1)
         self.assertEqual(1,result['selected']);self.assertEqual(1,result['automatic_gender_repairs']);self.assertEqual(1,len(provider.calls))
-        with sqlite3.connect(self.db) as db:
+        with db_connection(self.db) as db:
             self.assertEqual('pending',db.execute('select status from segments where segment_id=?',(self.ids[14],)).fetchone()[0])
     def test_ui_only_scope_does_not_retranslate_story(self):
         cfg=self.prepare();cfg['translation']['kinds']=['ui']
@@ -75,16 +76,16 @@ class AutomaticTests(unittest.TestCase):
     def test_failed_automatic_repair_keeps_old_text_and_is_retryable(self):
         cfg=self.prepare();result,provider=self.run_model(cfg,['Я понимала.','Я наконец понял.','Понятно.'])
         self.assertEqual(1,result['errors'])
-        with sqlite3.connect(self.db) as db:
+        with db_connection(self.db) as db:
             self.assertEqual(('Я понимала.','error'),db.execute('select translation,status from segments where segment_id=?',(self.ids[12],)).fetchone())
         result,provider=self.run_model(cfg,['Я понял.'])
         self.assertEqual(0,result['errors']);self.assertEqual(1,len(provider.calls))
     def test_cancelled_preflight_does_not_reset_any_translation(self):
         cfg=self.prepare()
-        with sqlite3.connect(self.db) as db:before=db.execute('select segment_id,translation,status from segments').fetchall()
+        with db_connection(self.db) as db:before=db.execute('select segment_id,translation,status from segments').fetchall()
         with patch('rpts.translation_engine.create_provider',return_value=LocalProvider([])),patch('rpts.runtime_control.check_cancelled',side_effect=KeyboardInterrupt),contextlib.redirect_stdout(io.StringIO()):
             with self.assertRaises(KeyboardInterrupt):translate_project(self.db,cfg)
-        with sqlite3.connect(self.db) as db:self.assertEqual(before,db.execute('select segment_id,translation,status from segments').fetchall())
+        with db_connection(self.db) as db:self.assertEqual(before,db.execute('select segment_id,translation,status from segments').fetchall())
         self.assertFalse((self.root/'backups').exists())
     def test_phone_metadata_controls_actual_listener_and_narrator(self):
         profiles={'a':{'gender':'male'},'b':{'gender':'male'},'mom':{'gender':'female'}}
@@ -101,7 +102,7 @@ class AutomaticTests(unittest.TestCase):
         from rpts.gender_review import find_gender_repair_rows
         from rpts.quality import discover_character_profiles
         self.prepare()
-        with sqlite3.connect(self.db) as db:
+        with db_connection(self.db) as db:
             profiles=discover_character_profiles(db)
             rows=find_gender_repair_rows(db,profiles)
         self.assertTrue(rows)
@@ -116,7 +117,7 @@ class SavedGenderTests(unittest.TestCase):
             (10,'Mira, she smiled.','narration','',''),(11,'I knew.','dialogue','p','')]:
             rows.append(_normalize_segment({'file':'script.rpy','line':n,'text':text,'kind':kind,'speaker':speaker,'source':source,'label':'start'},origin='static',channel='semantic'))
         write_project_database(self.path,segments=rows,translation_pairs=[],dialogue_translations=[],multilingual_variants=[],runtime_targets=[],metadata={})
-        with sqlite3.connect(self.path) as db:self.corpus=CharacterCorpus.read(db)
+        with db_connection(self.path) as db:self.corpus=CharacterCorpus.read(db)
         record=next(r for r in self.corpus.rows if r['source_line']==10)
         self.profile={'gender':'female','gender_source':'ai_evidence','profile_source_hash':'keep-valid-cache',
             'gender_evidence':[{'id':'E999','segment_id':record['segment_id'],'text_origin':'source','quote':record['source_text'],'reason':'Bound subject pronoun'}]}
@@ -138,14 +139,14 @@ class SavedGenderTests(unittest.TestCase):
         record=next(r for r in self.corpus.rows if r['source_line']==10);record['reference_en']='Mira is a man.'
         old=copy.deepcopy(self.profile);old.update(gender='male')
         old['gender_evidence'][0].update(text_origin='reference_en',quote=record['reference_en'])
-        with sqlite3.connect(self.path) as db:result=discover_profiles(db,{'p':old},corpus=self.corpus)
+        with db_connection(self.path) as db:result=discover_profiles(db,{'p':old},corpus=self.corpus)
         self.assertEqual('female',result['p']['gender']);self.assertEqual('source_explicit_reference',result['p']['gender_source'])
     def test_conflicting_original_evidence_does_not_keep_a_cached_gender(self):
         from rpts.characters import discover_profiles
         index=next(i for i,r in enumerate(self.corpus.rows) if r['source_line']==11)
         self.corpus.rows[index].update(kind='narration',speaker='',source_text='Mira, he smiled.')
         self.corpus.mentions['p'].append(index)
-        with sqlite3.connect(self.path) as db:result=discover_profiles(db,{'p':self.profile},corpus=self.corpus)
+        with db_connection(self.path) as db:result=discover_profiles(db,{'p':self.profile},corpus=self.corpus)
         self.assertEqual('unknown',result['p']['gender']);self.assertEqual('source_conflict',result['p']['gender_source'])
     def test_manual_gender_is_not_invalidated_by_missing_machine_evidence(self):
         old={**self.profile,'gender':'male','gender_locked':True,'gender_evidence':[]}
@@ -157,7 +158,7 @@ class SavedGenderTests(unittest.TestCase):
         return p
     def test_verified_cached_profile_does_not_call_the_model_again(self):
         provider=LocalProvider([])
-        with sqlite3.connect(self.path) as db,contextlib.redirect_stdout(io.StringIO()):
+        with db_connection(self.path) as db,contextlib.redirect_stdout(io.StringIO()):
             result=analyze_character_profiles(db,provider,{'p':self.cached_profile()},model_identity='hy-mt2-7b-q6')
         self.assertEqual('female',result['p']['gender']);self.assertEqual([],provider.calls)
     def test_invalid_cached_evidence_triggers_one_fresh_profile(self):
@@ -166,7 +167,7 @@ class SavedGenderTests(unittest.TestCase):
         reply={'entity_type':'person','gender':{'value':'female','confidence':1.0,'reason':'Named subject she',
             'evidence':[{'id':record['id'],'text_origin':'source','reason':'Named subject she'}]},'evidence_ids':[],'relationships':[]}
         provider=LocalProvider([json.dumps(reply)])
-        with sqlite3.connect(self.path) as db,contextlib.redirect_stdout(io.StringIO()):
+        with db_connection(self.path) as db,contextlib.redirect_stdout(io.StringIO()):
             result=analyze_character_profiles(db,provider,{'p':old},model_identity='hy-mt2-7b-q6')
         self.assertEqual('female',result['p']['gender']);self.assertEqual(1,len(provider.calls))
         self.assertTrue(result['p']['profile_source_hash'])

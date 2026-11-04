@@ -1,3 +1,4 @@
+from db_helpers import connection as db_connection
 """Gender evidence, fixed-name prose and scoped repair safety."""
 import contextlib,hashlib,io,json,os,shutil,sqlite3,subprocess,sys,tempfile,unittest
 from pathlib import Path
@@ -97,16 +98,16 @@ class RepairTests(unittest.TestCase):
         self.assertEqual(before,hashlib.sha256(self.db.read_bytes()).hexdigest())
         self.assertEqual('male',review['profiles']['a']['gender'])
     def test_manual_gender_is_preserved(self):
-        with sqlite3.connect(self.db) as db:profiles=discover_profiles(db,{'a':{'gender':'female','gender_source':'manual','gender_locked':True}})
+        with db_connection(self.db) as db:profiles=discover_profiles(db,{'a':{'gender':'female','gender_source':'manual','gender_locked':True}})
         self.assertEqual('female',profiles['a']['gender'])
     def test_backup_is_complete_and_all_handles_close(self):
         backup=backup_before_gender_repair(self.db)
-        with sqlite3.connect(backup) as b,sqlite3.connect(self.db) as d:
+        with db_connection(backup) as b,db_connection(self.db) as d:
             self.assertEqual(d.execute('select segment_id,translation,status from segments').fetchall(),b.execute('select segment_id,translation,status from segments').fetchall())
         renamed=backup.with_suffix('.bak');backup.rename(renamed);renamed.rename(backup)
     def test_scoped_selection_and_normal_translation_clear_stale_ids(self):
         review=scan_gender_repairs(self.db,self.profiles);cfg=load_config(APP/'templates/translation_config.mock.json');select_gender_repairs(cfg,review)
-        with sqlite3.connect(self.db) as db:
+        with db_connection(self.db) as db:
             ensure_engine_schema(db);ids={r['segment_id'] for r in _segment_rows(db,cfg)}
         self.assertEqual({self.ids[12],self.ids[13]},ids)
         select_translation_scope(cfg);self.assertEqual([],cfg['translation']['segment_ids'])
@@ -121,7 +122,7 @@ class RepairTests(unittest.TestCase):
         provider=ScriptedProvider(['Я понял.','Я наконец понял.'])
         with patch('rpts.translation_engine.create_provider',return_value=provider),contextlib.redirect_stdout(io.StringIO()):result=translate_project(self.db,cfg)
         self.assertEqual(0,result['errors']);self.assertEqual(2,result['translated']);self.assertEqual(2,len(provider.calls))
-        with sqlite3.connect(self.db) as db:
+        with db_connection(self.db) as db:
             self.assertEqual(('Я понимала.','approved','manual'),db.execute('select translation,status,provider from segments where segment_id=?',(self.ids[16],)).fetchone())
             self.assertEqual(('Я понял.','translated'),db.execute('select translation,status from segments where segment_id=?',(self.ids[15],)).fetchone())
             self.assertEqual('pending',db.execute('select status from segments where segment_id=?',(self.ids[14],)).fetchone()[0])
@@ -134,7 +135,7 @@ class RepairTests(unittest.TestCase):
         select_gender_repairs(cfg,review);provider=ScriptedProvider(['Я понимала.'])
         with patch('rpts.translation_engine.create_provider',return_value=provider),contextlib.redirect_stdout(io.StringIO()):result=translate_project(self.db,cfg)
         self.assertEqual(1,result['errors'])
-        with sqlite3.connect(self.db) as db:
+        with db_connection(self.db) as db:
             self.assertEqual(('Я понимала.','error'),db.execute('select translation,status from segments where segment_id=?',(review['repairs'][0]['segment_id'],)).fetchone())
     def test_no_separate_gender_repair_action_or_button(self):
         from rpts.desktop import ACTIONS
