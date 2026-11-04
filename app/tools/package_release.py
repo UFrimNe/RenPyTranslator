@@ -29,7 +29,9 @@ def distribution_files(root):
             if path.suffix.lower() in {'.pyc', '.pyo', '.log', '.zip', '.tmp'} and not rel.startswith('runtime/python/'):
                 continue
             # The Python standard library ZIP is part of the runtime, not a generated build archive.
-            if path.suffix.lower() in {'.pyc', '.pyo', '.log', '.tmp', '.pdb'}:
+            if path.suffix.lower() in {'.pyc', '.pyo', '.log', '.tmp'}:
+                continue
+            if path.suffix.lower() == '.pdb' and path.name not in {'RPTS.Desktop.pdb', 'RPTS.FolderPicker.pdb'}:
                 continue
             owned_path(rel)
             result.add(rel)
