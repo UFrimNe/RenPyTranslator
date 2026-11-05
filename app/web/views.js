@@ -32,7 +32,7 @@ function games() {
 }
 function translationSource(t) {
  if(!t.sources?.length)return state.models.find(m=>m.key===t.model)?.title||t.model||'Не записан';
- const labels=[...new Set(t.sources.map(x=>['google_free','google_translate'].includes(x.provider)?'Google Translate':x.provider==='manual'?'Ручные правки':['openai_compatible','ollama'].includes(x.provider)?(state.models.find(m=>m.key===x.model)?.title||x.model||'Локальный ИИ'):'Другой перевод'))];
+ const labels=[...new Set(t.sources.map(x=>['google_free','google_translate'].includes(x.provider)?'Google Translate':x.provider==='manual'?'Ручные правки':['openai_compatible','ollama'].includes(x.provider)?(state.models.find(m=>m.key===x.model)?.title||(x.model==='rpts-local'?'Локальный ИИ':x.model)||'Локальный ИИ'):'Другой перевод'))];
  return labels.length>1?'Смешанный: '+labels.join(' + '):labels[0];
 }
 const googleMode=()=>chosen()?.translation_method==='google_free';
@@ -57,7 +57,7 @@ const projectTools=[
  ['profiles','Профили персонажей','Род, имена и подтверждённые сведения','model'],
  ['evaluate','Проверка качества','Проверочный набор и отчёт','edit'],
  ['restore','Восстановить базу','Выбрать резервную копию проекта','refresh'],
- ['retranslate','Перевести заново','Сброс с резервной копией и подтверждением','refresh'],
+ ['retranslate','Перевести заново через ИИ','Сброс с резервной копией и подтверждением','refresh'],
  ['uninstall','Удалить патч','Откат установленного RPTS-перевода','close']
 ];
 function toolGrid(items) {return `<div class="tool-grid">${items.map(([action,title,detail,ic])=>`<button class="tool ${['uninstall','retranslate'].includes(action)?'careful':''}" data-action="${action}" ${busy()||!chosen()||(!chosen().audited&&action!=='audit')?'disabled':''}>${icon(ic)}<span><strong>${e(title)}</strong><small>${e(detail)}</small></span>${icon('arrow')}</button>`).join('')}</div>`;}

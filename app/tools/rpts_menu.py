@@ -1734,7 +1734,7 @@ def main(argv: list[str] | None = None) -> int:
     while True:
         _clear()
         print("=" * 64)
-        print("  RPTS — перевод игр на русский | 11.26")
+        print(f"  RPTS — бесплатный переводчик игр | {version}")
         print("=" * 64)
         project_overview()
         print("\n  1. Перевести игру / продолжить перевод")

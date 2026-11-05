@@ -55,7 +55,7 @@ def run():
     expect(page.locator('#modal-content')).to_contain_text('Модель скачивать не нужно')
     page.locator('[data-action="confirm-translate"]').click()
     assert translation_requests[-1]['params']=={'method':'google_free','install':True,'launch':False}
-    page.locator('[data-scope="game"][data-tab="interface"]').click()
+    page.locator('.tabs [data-scope="game"][data-tab="interface"]').click()
     page.locator('[data-action="translate_ui"]').first.click()
     assert translation_requests[-1]['action']=='translate_ui'
     page.locator('[data-scope="game"][data-tab="overview"]').click()

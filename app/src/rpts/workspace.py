@@ -28,7 +28,7 @@ def source_label(sources):
         provider=item['provider']
         label=('Google Translate' if provider in {'google_free','google_translate'} else
                'Ручные правки' if provider=='manual' else
-               item.get('model') or 'Локальный ИИ' if provider in {'openai_compatible','ollama'} else
+               (item.get('model') if item.get('model') not in {'','rpts-local',None} else 'Локальный ИИ') if provider in {'openai_compatible','ollama'} else
                'Другой перевод')
         if label not in labels:labels.append(label)
     return ' + '.join(labels) if labels else ''
