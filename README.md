@@ -42,36 +42,36 @@
 
 ## Проверка на вирусы
 
-Для файлов **релиза v11.29** добавлены ссылки на поиск отчётов VirusTotal по SHA-256:
+Для файлов **релиза v12.0** добавлены ссылки на поиск отчётов VirusTotal по SHA-256:
 
 | Файл | VirusTotal |
 | --- | --- |
-| Установщик EXE | [Найти отчёт](https://www.virustotal.com/gui/file/84e7186459d658b7606c745a30c9718c7abb32d586115c277cb714523a21db5a) |
-| Portable ZIP | [Найти отчёт](https://www.virustotal.com/gui/file/b2dcfff8a666038aff955230a73f5198695ca2fdcbe77157109b027d8da5f9ef) |
+| Установщик EXE | [Найти отчёт](https://www.virustotal.com/gui/file/17331f72db9b744c238157530fef0d1f1621b65eec4d7de0c823cb64c10121da) |
+| Portable ZIP | [Найти отчёт](https://www.virustotal.com/gui/file/84bd396242fe4f947661e24c4cceb61357e97600a59a9566dd3838beb5d30b24) |
 
 Если отчёт не найден, [открой VirusTotal](https://www.virustotal.com/gui/home/upload) и выбери скачанный EXE или ZIP для анализа. Отчёт относится к конкретному файлу с указанным хешем.
 
 <details>
 <summary><strong>Сверить контрольные суммы</strong></summary>
 
-**RenPyTranslator_11.29_Setup_win64.exe**
+**RenPyTranslator_12.0_Setup_win64.exe**
 
 ```text
-84e7186459d658b7606c745a30c9718c7abb32d586115c277cb714523a21db5a
+17331f72db9b744c238157530fef0d1f1621b65eec4d7de0c823cb64c10121da
 ```
 
-**RenPyTranslator_11_29_win64.zip**
+**RenPyTranslator_12_0_win64.zip**
 
 ```text
-b2dcfff8a666038aff955230a73f5198695ca2fdcbe77157109b027d8da5f9ef
+84bd396242fe4f947661e24c4cceb61357e97600a59a9566dd3838beb5d30b24
 ```
 
-[Все контрольные суммы релиза v11.29](https://github.com/UFrimNe/RenPyTranslator/releases/download/v11.29/SHA256SUMS.txt).
+[Все контрольные суммы релиза v12.0](https://github.com/UFrimNe/RenPyTranslator/releases/download/v12.0/SHA256SUMS.txt).
 
 В PowerShell можно получить SHA-256 скачанного установщика:
 
 ```powershell
-(Get-FileHash ".\RenPyTranslator_11.29_Setup_win64.exe" -Algorithm SHA256).Hash
+(Get-FileHash ".\RenPyTranslator_12.0_Setup_win64.exe" -Algorithm SHA256).Hash
 ```
 
 SHA-256 помогает сверить скачанный файл с опубликованным релизом; антивирусную проверку выполняет VirusTotal.
