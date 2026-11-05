@@ -11,6 +11,28 @@ from contextlib import closing
 from pathlib import Path
 
 READY = {'translated', 'translated_tm', 'approved'}
+TRANSLATION_METHODS = {'local_ai', 'google_free'}
+
+def translation_sources(path):
+    if not Path(path).is_file(): return []
+    try:
+        with closing(sqlite3.connect(Path(path).resolve().as_uri()+'?mode=ro',uri=True,timeout=.3)) as db:
+            return [{'provider':p or 'unknown','model':m or '', 'rows':n} for p,m,n in db.execute(
+                "SELECT provider,model,count(*) FROM segments WHERE status IN ('translated','translated_tm','approved') "
+                "AND translation<>'' GROUP BY provider,model ORDER BY provider,model")]
+    except sqlite3.Error: return []
+
+def source_label(sources):
+    labels=[]
+    for item in sources:
+        provider=item['provider']
+        label=('Google Translate' if provider in {'google_free','google_translate'} else
+               'Ручные правки' if provider=='manual' else
+               item.get('model') or 'Локальный ИИ' if provider in {'openai_compatible','ollama'} else
+               'Другой перевод')
+        if label not in labels:labels.append(label)
+    return ' + '.join(labels) if labels else ''
+
 
 def read_json(path, default=None):
     try:
@@ -183,7 +205,7 @@ class Workspace:
             game=str(info.get('game_dir') or meta.get('game_dir') or '')
             if not game:continue
             item={'id':p.name,'title':info.get('title') or Path(game).parent.name,'game_dir':game,'path':str(p),
-                  'available':Path(game).is_dir(),'model':info.get('model',''),'updated_at':info.get('updated_at',''),
+                  'available':Path(game).is_dir(),'translation_method':info.get('translation_method','local_ai'),'model':info.get('model',''),'updated_at':info.get('updated_at',''),
                   'audited':db.is_file(),'installed':(Path(game)/'rpts_installed_manifest.json').is_file(),**counts(db)}
             # The actual installer filename is shared with the patch backend.
             from .patch_project import MANIFEST_NAME
@@ -196,6 +218,11 @@ class Workspace:
         for p in self.project_paths():
             if p.name==identity:return p
         raise ValueError('Проект не найден. Добавь игру в библиотеку.')
+    def set_translation_method(self,identity,method):
+        if method not in TRANSLATION_METHODS:raise ValueError('Неизвестный способ перевода.')
+        path=self.project(identity)/'project.json';info=read_json(path)
+        info['translation_method']=method;write_json(path,info)
+
     def add_game(self,value):
         game=game_folder(value)
         for item in self.projects_list():
@@ -219,7 +246,7 @@ class Workspace:
             if manifest and str(patch) not in saved:
                 result.append({'id':'working:'+game['id'],'project_id':game['id'],'title':game['title'],'created_at':manifest.get('created_at',''),
                     'ready':manifest.get('translated_rows',0),'total':game['total'],'language':manifest.get('renpy_language','russian'),
-                    'model':game['model'],'source_patch':str(patch),'working':True})
+                    'model':game['model'],'sources':translation_sources(Path(game['path'])/'work/translation_project.sqlite'),'source_patch':str(patch),'working':True})
         return result
     def translation_path(self,identity):
         if isinstance(identity,str) and identity.startswith('working:'):return self.project(identity[8:])/'work/patch'
@@ -245,9 +272,10 @@ class Workspace:
                 target=staging/'patch'/rel;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(src,target)
             shutil.copy2(patch/'patch_manifest.json',staging/'patch/patch_manifest.json')
             game=next(x for x in self.projects_list() if x['id']==project_id)
+            sources=translation_sources(self.project(project_id)/'work/translation_project.sqlite') if patch==self.project(project_id)/'work/patch' else []
             write_json(staging/'translation.json',{'id':identity,'project_id':project_id,'title':game['title'],'created_at':stamp,
                 'ready':manifest.get('translated_rows',0),'total':game['total'],'language':manifest.get('renpy_language','russian'),
-                'model':model or game['model'],'source_patch':str(patch),'working':False})
+                'model':model or source_label(sources) or game['model'],'sources':sources,'source_patch':str(patch),'working':False})
             staging.rename(destination)
         except BaseException:
             shutil.rmtree(staging,ignore_errors=True);raise

@@ -88,7 +88,13 @@ class Desktop:
             if self.busy():raise ValueError('Дождись текущей операции или останови её.')
             stamp=datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')+'-'+secrets.token_hex(4)
             folder=self.ws.jobs/stamp;folder.mkdir()
-            task={'action':action,'project_id':identity,'params':params or {}}
+            params=dict(params or {})
+            if action in {'translate','translate_ui','google_translate'}:
+                from .workspace import TRANSLATION_METHODS
+                method='google_free' if action=='google_translate' else params.get('method') or read_json(self.ws.project(identity)/'project.json').get('translation_method','local_ai')
+                if method not in TRANSLATION_METHODS:raise ValueError('Неизвестный способ перевода.')
+                params['method']=method
+            task={'action':action,'project_id':identity,'params':params}
             self.job={'id':stamp,**task,'status':'running','phase':'Подготовка','progress':None,'done':0,'total':0,
                 'errors':0,'started_at':time.time(),'logs':[],'input':None,'message':''}
             self._save_job()
@@ -123,7 +129,9 @@ class Desktop:
                             if progress:
                                 done,total,errors,eta=progress.groups();total=int(total)
                                 self.job.update(done=int(done),total=total,errors=int(errors),eta=eta,
+                                    phase='Google — быстрый перевод' if self.job.get('params',{}).get('method')=='google_free' else 'Перевод и проверка строк',
                                     progress=round(100*(int(done)+int(errors))/total,1) if total else 100)
+                            elif line.startswith(('[RETRY]','[GOOGLE]')):self.job.update(phase=line.split(']',1)[1].strip(),detail=line)
                             elif '[CHARACTERS]' in line:self.job.update(phase='Профили персонажей',detail=line.replace('[CHARACTERS]','').strip())
                             elif re.search(r'\((\d+(?:\.\d+)?)%\)',line):self.job['progress']=min(100,float(re.search(r'\((\d+(?:\.\d+)?)%\)',line)[1]))
                         self._save_job()
@@ -184,6 +192,9 @@ class Desktop:
         if route=='/api/select':
             self.ws.project(data['id']);preferences=read_json(self.ws.settings/'desktop.json');preferences['active_project']=data['id']
             write_json(self.ws.settings/'desktop.json',preferences);return {'ok':True}
+        if route=='/api/translation-method':
+            self.ws.set_translation_method(data.get('project_id'),data.get('method'))
+            return {'ok':True}
         if route=='/api/settings':
             from .local_ai import MODEL_SPECS,save_settings,make_translation_config,detect_hardware
             from .model_policy import model_family

@@ -7,7 +7,7 @@ APP = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(APP / 'src'), str(APP / 'tools'), str(APP / 'tests')]
 MODULES = (
     'test_automatic_gender', 'test_gender_review', 'test_scene_situation',
-    'test_desktop', 'test_translation_repairs', 'test_launch_and_static_ui',
+    'test_desktop', 'test_google_desktop', 'test_translation_repairs', 'test_launch_and_static_ui',
     'test_native_folder', 'test_launcher', 'test_updater', 'test_release_packaging',
 )
 

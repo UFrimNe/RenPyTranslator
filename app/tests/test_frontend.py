@@ -24,11 +24,13 @@ def run():
    with sync_playwright() as p:
     browser=p.chromium.launch(executable_path=os.environ.get('RPTS_TEST_BROWSER'),headless=True,args=['--no-sandbox'])
     page=browser.new_page(viewport={'width':1360,'height':900});errors=[];requests=[]
-    picker_requests=[];launch_requests=[]
+    picker_requests=[];launch_requests=[];translation_requests=[]
     def route_job(route):
      data=route.request.post_data_json
      if data['action']=='launch':
       launch_requests.append(data);route.fulfill(status=200,json={'id':'test-launch'})
+     elif data['action'] in {'translate','translate_ui'}:
+      translation_requests.append(data);route.fulfill(status=200,json={'id':'test-translate'})
      else:route.continue_()
     page.route('**/api/job',route_job)
     page.route('**/api/pick-folder',lambda route:picker_requests.append(route))
@@ -42,6 +44,27 @@ def run():
     screenshot('01-library.png')
     page.locator('[data-action="select-game"][data-id="'+pid+'"]').first.click();expect(page.locator('h1')).to_have_text('Emberbound')
     expect(page.locator('.tabs [data-scope="game"]')).to_have_count(5);screenshot('02-game.png')
+    method=page.locator('.custom-select:has(#translation-method) [role="combobox"]')
+    method.click();method.press('End');method.press('Enter')
+    expect(page.locator('.method-panel h3')).to_have_text('Google Translate')
+    assert read_json(ws.project(pid)/'project.json')['translation_method']=='google_free'
+    page.reload();expect(page.locator('h1')).to_have_text('Библиотека')
+    page.locator('[data-action="select-game"][data-id="'+pid+'"]').first.click()
+    expect(page.locator('#translation-method')).to_have_value('google_free')
+    page.locator('[data-action="translate"]').click()
+    expect(page.locator('#modal-content')).to_contain_text('Модель скачивать не нужно')
+    page.locator('[data-action="confirm-translate"]').click()
+    assert translation_requests[-1]['params']=={'method':'google_free','install':True,'launch':False}
+    page.locator('[data-scope="game"][data-tab="interface"]').click()
+    page.locator('[data-action="translate_ui"]').first.click()
+    assert translation_requests[-1]['action']=='translate_ui'
+    page.locator('[data-scope="game"][data-tab="overview"]').click()
+    # Changing one game's method must leave the other game on local AI.
+    assert next(x for x in ws.projects_list() if x['id']!=pid)['translation_method']=='local_ai'
+    method=page.locator('.custom-select:has(#translation-method) [role="combobox"]')
+    method.click();method.press('Home');method.press('Enter')
+    expect(page.locator('#translation-method')).to_have_value('local_ai')
+    screenshot('12-translation-method.png')
     page.locator('[data-action="launch"]').click()
     expect(page.locator('.launch-choice')).to_have_count(2)
     expect(page.locator('.launch-summary')).to_contain_text('1 из 2')
@@ -193,6 +216,6 @@ def run():
     expect(fallback.locator('.directory-list')).to_have_count(0)
     fallback.close()
     browser.close()
-    print(json.dumps({'result':'passed','checks':['library/search','5 game tabs','manual edit + markers','versions','static-first phone/UI + collapsed capture fallback','partial launch choice + no-ready + API failure','custom menus: keyboard/mouse/typeahead/Escape/Tab + saved settings','9 models','parameters in one place','draft survives navigation','save settings','Ctrl+K search','release updater: notification, install action, progress, offline error','support separate from project tools','real diagnostic job','tasks/log','invalid game path','native bridge: game/import/cancel/error/Unicode path','no custom directory UI','one icon family + attribution','all pages at 1360/1024/920','no external requests','no JavaScript errors']},ensure_ascii=False))
+    print(json.dumps({'result':'passed','checks':['Google method: persistence, no model download, same translate/UI actions, per-game isolation','library/search','5 game tabs','manual edit + markers','versions','static-first phone/UI + collapsed capture fallback','partial launch choice + no-ready + API failure','custom menus: keyboard/mouse/typeahead/Escape/Tab + saved settings','9 models','parameters in one place','draft survives navigation','save settings','Ctrl+K search','release updater: notification, install action, progress, offline error','support separate from project tools','real diagnostic job','tasks/log','invalid game path','native bridge: game/import/cancel/error/Unicode path','no custom directory UI','one icon family + attribution','all pages at 1360/1024/920','no external requests','no JavaScript errors']},ensure_ascii=False))
   finally:server.shutdown();server.server_close()
 if __name__=='__main__':run()

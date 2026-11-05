@@ -22,6 +22,7 @@ def select_translation_scope(config, *, ui_only=False):
                      kinds=sorted(UI_KINDS) if ui_only else [], origins=[],
                      include_interactive=True)
     selection['segment_ids']=[]
+    selection['refresh_legacy_ai']=False
     selection.pop('repair_scope',None)
     return config
 
@@ -49,7 +50,7 @@ def run(task):
         import rpts_menu as menu
         menu._input=prompt;menu._pause=lambda:None;menu._clear=lambda:None
         menu._activate_project_workspace()
-        diagnostics.begin_session(ws.data,'RPTS Desktop 11.26')
+        diagnostics.begin_session(ws.data,'RPTS Desktop '+(APP/'VERSION.txt').read_text().strip())
         diagnostics.event('desktop_task',task=task)
         action=task['action'];params=task.get('params') or {}
         check_cancelled()
@@ -84,8 +85,7 @@ def run(task):
             phase('Сборка русского перевода')
             patch=menu.WORK/'patch'
             manifest=build_patch(menu.WORK_DB,patch,overrides_path=menu._ensure_ui_overrides())
-            settings=read_json(menu.LOCAL_AI_SETTINGS)
-            saved=ws.save_translation(identity,patch,settings.get('model_key',''))
+            saved=ws.save_translation(identity,patch)
             emit('artifact',kind='translation',id=saved)
             return patch,manifest
         if action=='install_model':
@@ -95,6 +95,42 @@ def run(task):
             rc=menu.audit(str(ws.game(identity)))
             if rc or not menu.ensure_work():raise RuntimeError('Анализ игры не завершён. Подробности в журнале.')
             return {'message':'Игра проанализирована. Можно начать перевод.'}
+        if action in {'translate','translate_ui','google_translate'}:
+            from rpts.workspace import TRANSLATION_METHODS
+            method='google_free' if action=='google_translate' else params.get('method') or read_json(ws.project(identity)/'project.json').get('translation_method','local_ai')
+            if method not in TRANSLATION_METHODS:raise ValueError('Неизвестный способ перевода.')
+            diagnostics.event('translation_method',method=method,ui_only=action=='translate_ui')
+            if method=='google_free':
+                from rpts.translation_engine import translate_project,load_config,reset_mock
+                from rpts.patch_project import install_patch,launch_game
+                from rpts.providers import ProviderRateLimitError,ProviderError
+                ensure_project();menu._ensure_free_google_config()
+                cfg=load_config(menu.FREE_USER_CFG)
+                # Google cannot use AI profiles, prompts or editorial passes.
+                cfg['provider'].update(type='google_free',model='google-web-rpc')
+                cfg['quality']={'enabled':False,'quality_dir':str(menu.LOCAL_AI_QUALITY),
+                                'character_profiles_file':str(menu.LOCAL_AI_QUALITY/'character_profiles.json')}
+                cfg['translation'].update(refresh_legacy_ai=False,concurrent_batches=1,stop_on_batch_error=True,
+                                          use_existing_translation_memory=False,progress_every_batches=1)
+                select_translation_scope(cfg,ui_only=action=='translate_ui')
+                reset_mock(menu.WORK_DB);phase('Google — быстрый перевод')
+                try:result=translate_project(menu.WORK_DB,cfg)
+                except ProviderRateLimitError as exc:
+                    return {'message':'Google временно ограничил запросы. Готовые строки сохранены. Продолжи позже.',
+                            'warning':True,'rate_limited':True,'method':method,'detail':str(exc)}
+                except ProviderError as exc:
+                    raise RuntimeError('Google не ответил. Готовые строки сохранены; попробуй продолжить позже. Подробности: '+str(exc)) from exc
+                check_cancelled()
+                info=read_json(ws.project(identity)/'project.json')
+                info.update(model='Google Translate',updated_at=time.time());write_json(ws.project(identity)/'project.json',info)
+                if result.get('errors'):
+                    return {'message':'Готовые строки сохранены. Остались ошибки; нажми «Продолжить перевод».','warning':True,'method':method,**result}
+                patch,manifest=build()
+                if params.get('install',True):
+                    phase('Установка перевода');install_patch(patch,ws.game(identity),backup_dir=menu.LOCAL_AI_BACKUPS/'installed')
+                if params.get('launch',False) and params.get('install',True):
+                    phase('Запуск игры');launch_game(ws.game(identity))
+                return {'message':'Google-перевод сохранён в библиотеке.','method':method,**result}
         if action in {'translate','translate_ui','profiles'}:
             ensure_project();settings=ready_ai();server=None
             from rpts.local_ai import prepare_runtime_server,start_server,stop_server,detect_hardware
@@ -168,7 +204,7 @@ def run(task):
                  'import_runtime':menu.ui_import_runtime,'coverage':menu.ui_coverage,'uninstall':menu.uninstall_patch,
                  'retranslate':menu.local_ai_retranslate_all,'restore':menu.local_ai_restore_backup,
                  'evaluate':menu.local_ai_evaluate_russian,'unrpyc':menu.install_unrpyc,
-                 'google_translate':menu.google_free_translate_only}
+                 }
         if action in actions:
             if action!='unrpyc':need_project()
             phase('Выполняю выбранную операцию')

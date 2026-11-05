@@ -580,6 +580,7 @@ def _call_provider_with_retry(provider, *, system_prompt: str, user_prompt: str,
     attempts = max(1, int(provider.config.max_retries) + 1)
     last_error = None
     for n in range(attempts):
+        check_cancelled()
         if stop_event is not None and stop_event.is_set():
             raise ProviderCancelledError("Request/retry cancelled after another batch failed")
         try:
@@ -597,6 +598,8 @@ def _call_provider_with_retry(provider, *, system_prompt: str, user_prompt: str,
             if n + 1 >= attempts:
                 break
             delay = float(provider.config.retry_delay_seconds) * (2 ** n)
+            diagnostics.event('provider_retry',provider=provider.name,attempt=n+1,delay_seconds=delay,error=str(e))
+            print(f"[RETRY] Повторяем запрос через {delay:g} с ({n+1}/{attempts-1})…",flush=True)
             if delay > 0:
                 if stop_event is not None:
                     stop_event.wait(delay)
@@ -1213,7 +1216,7 @@ def _counter(values):
 def translate_project(db_path: str | Path, config: dict[str, Any], *, dry_run: bool = False, limit: int | None = None, allow_mock: bool = False, profiles_only: bool = False, rebuild_profiles: bool = False):
     config = normalize_translation_config(copy.deepcopy(config))
     db_path = Path(db_path)
-    if not dry_run and not profiles_only and config.get('translation',{}).get('repair_scope')!='gender':
+    if not dry_run and not profiles_only and config.get('provider',{}).get('type') in {'openai_compatible','ollama'} and config.get('translation',{}).get('repair_scope')!='gender':
         from .alignment_recovery import recover_project_translations
         recover_project_translations(db_path)
     db = sqlite3.connect(db_path)

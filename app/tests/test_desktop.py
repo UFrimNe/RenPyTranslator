@@ -27,6 +27,7 @@ def fixture(root,name='Пример игры',ready=True):
     game=root/name/'game';game.mkdir(parents=True,exist_ok=True)
     (game/'script.rpy').write_text('define a = Character("Alex")\nlabel start:\n    a "Hello [name]."\n    a "Let us go."\n    return\n',encoding='utf-8')
     ws=Workspace(root/'translator').initialize();pid=ws.add_game(game);project=ws.project(pid)
+    (ws.root/'app').mkdir(exist_ok=True);shutil.copy2(APP/'VERSION.txt',ws.root/'app/VERSION.txt')
     db=project/'work/translation_project.sqlite';db.parent.mkdir(parents=True)
     rows=[]
     for n,text in enumerate(['Hello [name].','Let us go.']):

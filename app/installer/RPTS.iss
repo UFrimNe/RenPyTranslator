@@ -1,5 +1,5 @@
 #ifndef AppVersion
-  #define AppVersion "11.29"
+  #define AppVersion "12.0"
 #endif
 #ifndef CompressionPreset
   #define CompressionPreset "lzma2/ultra64"

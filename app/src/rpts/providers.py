@@ -368,11 +368,14 @@ def _http_form_json_any(url: str, body: dict[str, Any], headers: dict[str, str],
     for key, value in headers.items():
         if value:
             req.add_header(key, value)
+    trace = diagnostics.http_start(url,body,headers,timeout)
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             payload = resp.read().decode("utf-8", errors="replace")
+            diagnostics.http_end(trace,response=payload,status=getattr(resp,'status',None))
     except urllib.error.HTTPError as e:
         detail_full = e.read().decode("utf-8", errors="replace")
+        diagnostics.http_end(trace,response=detail_full,error=str(e),status=e.code)
         detail = detail_full[:1200]
         retry_after = ""
         try:
@@ -388,6 +391,7 @@ def _http_form_json_any(url: str, body: dict[str, Any], headers: dict[str, str],
             ) from None
         raise ProviderError(f"HTTP {e.code}:{extra} {detail}") from None
     except Exception as e:
+        diagnostics.http_end(trace,error=str(e))
         raise ProviderError(f"Free Google Translate request failed: {type(e).__name__}: {e}") from None
     try:
         return json.loads(payload)
@@ -412,11 +416,15 @@ def _http_form_text(url: str, body: dict[str, Any], params: dict[str, Any], head
     for key, value in headers.items():
         if value:
             req.add_header(key, value)
+    trace = diagnostics.http_start(url,body,headers,timeout)
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
-            return resp.read().decode("utf-8", errors="replace")
+            payload=resp.read().decode("utf-8", errors="replace")
+            diagnostics.http_end(trace,response=payload,status=getattr(resp,'status',None))
+            return payload
     except urllib.error.HTTPError as e:
         detail_full = e.read().decode("utf-8", errors="replace")
+        diagnostics.http_end(trace,response=detail_full,error=str(e),status=e.code)
         retry_after = ""
         try:
             retry_after = e.headers.get("Retry-After", "")
@@ -431,6 +439,7 @@ def _http_form_text(url: str, body: dict[str, Any], params: dict[str, Any], head
             ) from None
         raise ProviderError(f"HTTP {e.code}:{extra} {detail_full[:1200]}") from None
     except Exception as e:
+        diagnostics.http_end(trace,error=str(e))
         raise ProviderError(f"Free Google Translate browser RPC failed: {type(e).__name__}: {e}") from None
 
 
@@ -578,12 +587,17 @@ class GoogleFreeTranslateProvider(BaseProvider):
         return translated
 
     def _request_text(self, text: str, source: str, target: str) -> str:
+        from .runtime_control import check_cancelled
+        check_cancelled()
         try:
             return self._request_text_rpc(text, source, target)
         except ProviderRateLimitError:
             # Do not route around a Google rate-limit/CAPTCHA. Stop and resume later.
             raise
         except ProviderError as rpc_error:
+            check_cancelled()
+            diagnostics.event('google_fallback',primary='web_rpc',fallback='gtx',error=str(rpc_error))
+            print('[GOOGLE] Основное подключение не ответило. Пробую запасное…',flush=True)
             try:
                 return self._request_text_gtx(text, source, target)
             except ProviderRateLimitError:
